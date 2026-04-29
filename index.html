@@ -1,0 +1,1974 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>TeraPush Legal — AI-Powered Legal Intelligence</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=League+Spartan:wght@400;500;600;700;800;900&family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>
+/* ─── TOKENS ────────────────────────────────────────────── */
+:root {
+  --navy:       #0B1D3A;
+  --navy-mid:   #122244;
+  --navy-light: #1A3060;
+  --navy-hover: #1E3A72;
+  --blue:       #2563EB;
+  --blue-light: #3B82F6;
+  --sky:        #BAE0FF;
+  --sky-light:  #EFF6FF;
+  --white:      #FFFFFF;
+  --gray-50:    #F8FAFC;
+  --gray-100:   #F1F5F9;
+  --gray-200:   #E2E8F0;
+  --gray-400:   #94A3B8;
+  --gray-600:   #475569;
+  --gray-800:   #1E293B;
+  --green:      #10B981;
+  --amber:      #F59E0B;
+  --red:        #EF4444;
+  --shadow-sm:  0 1px 3px rgba(11,29,58,.08), 0 1px 2px rgba(11,29,58,.05);
+  --shadow-md:  0 4px 16px rgba(11,29,58,.10), 0 2px 6px rgba(11,29,58,.06);
+  --shadow-lg:  0 10px 40px rgba(11,29,58,.14);
+  --r:          10px;
+  --r-lg:       16px;
+  --sidebar-w:  260px;
+  --header-h:   64px;
+}
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+body {
+  font-family: 'Poppins', sans-serif;
+  font-size: 14px;
+  color: var(--gray-800);
+  background: var(--gray-50);
+  overflow-x: hidden;
+}
+h1,h2,h3,h4,h5,.league { font-family: 'League Spartan', sans-serif; }
+a { text-decoration: none; color: inherit; }
+button { cursor: pointer; font-family: 'Poppins', sans-serif; border: none; background: none; }
+input, textarea, select {
+  font-family: 'Poppins', sans-serif;
+  font-size: 14px;
+  outline: none;
+  border: 1.5px solid var(--gray-200);
+  border-radius: var(--r);
+  padding: 10px 14px;
+  width: 100%;
+  background: var(--white);
+  color: var(--gray-800);
+  transition: border-color .2s, box-shadow .2s;
+}
+input:focus, textarea:focus, select:focus {
+  border-color: var(--blue-light);
+  box-shadow: 0 0 0 3px rgba(59,130,246,.12);
+}
+textarea { resize: vertical; min-height: 90px; }
+::-webkit-scrollbar { width: 5px; height: 5px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--gray-200); border-radius: 99px; }
+
+/* ─── UTILITIES ─────────────────────────────────────────── */
+.hidden { display: none !important; }
+.flex { display: flex; }
+.flex-col { flex-direction: column; }
+.items-center { align-items: center; }
+.justify-between { justify-content: space-between; }
+.gap-1 { gap: 4px; } .gap-2 { gap: 8px; } .gap-3 { gap: 12px; } .gap-4 { gap: 16px; }
+.w-full { width: 100%; }
+.text-sm { font-size: 12px; }
+.text-muted { color: var(--gray-400); }
+.truncate { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.badge {
+  display: inline-flex; align-items: center; padding: 3px 10px;
+  border-radius: 99px; font-size: 11px; font-weight: 600; font-family: 'Poppins',sans-serif;
+}
+.badge-blue   { background: #EFF6FF; color: var(--blue); }
+.badge-green  { background: #ECFDF5; color: var(--green); }
+.badge-amber  { background: #FFFBEB; color: var(--amber); }
+.badge-gray   { background: var(--gray-100); color: var(--gray-600); }
+.badge-red    { background: #FEF2F2; color: var(--red); }
+
+/* ─── BUTTONS ───────────────────────────────────────────── */
+.btn {
+  display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+  padding: 10px 20px; border-radius: var(--r);
+  font-size: 13.5px; font-weight: 600; font-family: 'Poppins',sans-serif;
+  transition: all .18s; line-height: 1;
+}
+.btn-primary {
+  background: var(--blue); color: #fff;
+  box-shadow: 0 2px 8px rgba(37,99,235,.30);
+}
+.btn-primary:hover { background: var(--blue-light); transform: translateY(-1px); box-shadow: 0 4px 14px rgba(37,99,235,.35); }
+.btn-navy { background: var(--navy); color: #fff; }
+.btn-navy:hover { background: var(--navy-light); }
+.btn-ghost { background: transparent; color: var(--gray-600); border: 1.5px solid var(--gray-200); }
+.btn-ghost:hover { background: var(--gray-100); border-color: var(--gray-300); }
+.btn-sm { padding: 7px 14px; font-size: 12.5px; }
+.btn-lg { padding: 13px 28px; font-size: 15px; }
+.btn-icon { padding: 8px; border-radius: 8px; }
+.btn-danger { background: #FEF2F2; color: var(--red); }
+.btn-danger:hover { background: var(--red); color: #fff; }
+.btn:disabled { opacity: .5; cursor: not-allowed; pointer-events: none; }
+
+/* ─── CARDS ─────────────────────────────────────────────── */
+.card {
+  background: var(--white);
+  border: 1px solid var(--gray-200);
+  border-radius: var(--r-lg);
+  box-shadow: var(--shadow-sm);
+}
+.card-body { padding: 24px; }
+.card-header { padding: 20px 24px 0; }
+.card-footer { padding: 0 24px 20px; }
+
+/* ─── AUTH SCREEN ───────────────────────────────────────── */
+#auth-screen {
+  min-height: 100vh;
+  background: linear-gradient(135deg, var(--navy) 0%, var(--navy-light) 55%, #1a4a8a 100%);
+  display: flex; align-items: center; justify-content: center;
+  position: relative; overflow: hidden;
+}
+#auth-screen::before {
+  content: ''; position: absolute; inset: 0;
+  background: radial-gradient(ellipse at 70% 20%, rgba(59,130,246,.15) 0%, transparent 60%),
+              radial-gradient(ellipse at 10% 80%, rgba(37,99,235,.10) 0%, transparent 50%);
+}
+.auth-grid {
+  display: grid; grid-template-columns: 1fr 420px; gap: 0;
+  width: min(900px, 95vw); min-height: 560px;
+  background: var(--white); border-radius: 20px;
+  box-shadow: var(--shadow-lg); overflow: hidden; position: relative; z-index: 1;
+}
+.auth-left {
+  background: linear-gradient(160deg, var(--navy) 0%, var(--navy-light) 100%);
+  padding: 56px 48px;
+  display: flex; flex-direction: column; justify-content: space-between;
+  position: relative; overflow: hidden;
+}
+.auth-left::before {
+  content: ''; position: absolute; bottom: -60px; right: -60px;
+  width: 280px; height: 280px; border-radius: 50%;
+  background: rgba(59,130,246,.12); pointer-events: none;
+}
+.auth-left::after {
+  content: ''; position: absolute; top: 40px; right: 20px;
+  width: 120px; height: 120px; border-radius: 50%;
+  background: rgba(186,224,255,.06); pointer-events: none;
+}
+.auth-logo { display: flex; align-items: center; gap: 12px; margin-bottom: 40px; }
+.auth-logo img { height: 36px; filter: brightness(0) invert(1); }
+.auth-logo-text { font-family: 'League Spartan', sans-serif; font-size: 22px; font-weight: 800; color: #fff; }
+.auth-logo-sub { font-size: 11px; color: var(--sky); font-weight: 500; letter-spacing: .5px; display: block; margin-top: -3px; }
+.auth-tagline { font-family: 'League Spartan', sans-serif; font-size: 30px; font-weight: 800; color: #fff; line-height: 1.25; }
+.auth-tagline span { color: var(--sky); }
+.auth-desc { color: rgba(186,224,255,.75); font-size: 13px; line-height: 1.7; margin-top: 16px; }
+.auth-features { display: flex; flex-direction: column; gap: 10px; }
+.auth-feat {
+  display: flex; align-items: center; gap: 10px;
+  color: rgba(255,255,255,.85); font-size: 12.5px;
+}
+.auth-feat-icon {
+  width: 28px; height: 28px; border-radius: 7px;
+  background: rgba(59,130,246,.25); display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0; font-size: 13px;
+}
+.auth-right { padding: 40px 36px; display: flex; flex-direction: column; justify-content: center; }
+.auth-tabs { display: flex; gap: 0; background: var(--gray-100); border-radius: 10px; padding: 4px; margin-bottom: 28px; }
+.auth-tab {
+  flex: 1; padding: 9px 16px; border-radius: 7px; font-size: 13px; font-weight: 600;
+  color: var(--gray-400); transition: all .18s; text-align: center; cursor: pointer;
+}
+.auth-tab.active { background: var(--white); color: var(--navy); box-shadow: var(--shadow-sm); }
+.auth-title { font-family: 'League Spartan', sans-serif; font-size: 24px; font-weight: 800; color: var(--navy); margin-bottom: 6px; }
+.auth-subtitle { color: var(--gray-400); font-size: 12.5px; margin-bottom: 24px; }
+.form-group { margin-bottom: 16px; }
+.form-label { display: block; font-size: 12.5px; font-weight: 600; color: var(--gray-600); margin-bottom: 6px; }
+.auth-divider { display: flex; align-items: center; gap: 12px; margin: 20px 0; color: var(--gray-400); font-size: 12px; }
+.auth-divider::before, .auth-divider::after { content: ''; flex: 1; height: 1px; background: var(--gray-200); }
+.auth-footer { text-align: center; font-size: 12px; color: var(--gray-400); margin-top: 16px; }
+.auth-footer a { color: var(--blue); font-weight: 600; }
+.error-msg { background: #FEF2F2; border: 1px solid #FECACA; border-radius: 8px; padding: 10px 14px; color: var(--red); font-size: 12.5px; margin-bottom: 14px; display: none; }
+
+/* ─── APP SHELL ─────────────────────────────────────────── */
+#app-shell { display: flex; min-height: 100vh; }
+
+/* ─── SIDEBAR ───────────────────────────────────────────── */
+#sidebar {
+  width: var(--sidebar-w); min-height: 100vh;
+  background: var(--navy);
+  display: flex; flex-direction: column;
+  position: fixed; top: 0; left: 0; z-index: 100;
+  transition: transform .3s;
+}
+.sidebar-logo {
+  padding: 22px 20px 16px;
+  display: flex; align-items: center; gap: 10px;
+  border-bottom: 1px solid rgba(255,255,255,.07);
+}
+.sidebar-logo img { height: 30px; filter: brightness(0) invert(1); }
+.sidebar-logo-text { font-family: 'League Spartan', sans-serif; font-size: 17px; font-weight: 800; color: #fff; }
+.sidebar-logo-sub { font-size: 10px; color: var(--sky); letter-spacing: .3px; display: block; margin-top: -2px; }
+.sidebar-nav { padding: 16px 10px; flex: 1; overflow-y: auto; }
+.nav-section { margin-bottom: 24px; }
+.nav-section-label {
+  font-size: 10px; font-weight: 700; letter-spacing: 1.2px;
+  color: rgba(186,224,255,.4); padding: 0 10px; margin-bottom: 6px;
+  text-transform: uppercase;
+}
+.nav-item {
+  display: flex; align-items: center; gap: 10px;
+  padding: 9px 12px; border-radius: 8px; cursor: pointer;
+  color: rgba(255,255,255,.65); font-size: 13px; font-weight: 500;
+  transition: all .18s; margin-bottom: 2px; position: relative;
+}
+.nav-item:hover { background: rgba(255,255,255,.07); color: #fff; }
+.nav-item.active { background: rgba(59,130,246,.2); color: #fff; }
+.nav-item.active .nav-icon { color: var(--sky); }
+.nav-icon { font-size: 16px; width: 20px; text-align: center; flex-shrink: 0; }
+.nav-badge {
+  margin-left: auto; background: var(--blue); color: #fff;
+  font-size: 10px; font-weight: 700; padding: 2px 7px; border-radius: 99px;
+}
+.sidebar-footer {
+  padding: 14px 10px;
+  border-top: 1px solid rgba(255,255,255,.07);
+}
+.sidebar-user {
+  display: flex; align-items: center; gap: 10px;
+  padding: 10px 12px; border-radius: 8px; cursor: pointer;
+  transition: background .18s;
+}
+.sidebar-user:hover { background: rgba(255,255,255,.07); }
+.user-avatar {
+  width: 34px; height: 34px; border-radius: 50%;
+  background: linear-gradient(135deg, var(--blue) 0%, #7C3AED 100%);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 13px; font-weight: 700; color: #fff; flex-shrink: 0;
+  font-family: 'League Spartan', sans-serif;
+}
+.user-info { flex: 1; min-width: 0; }
+.user-name { font-size: 12.5px; font-weight: 600; color: #fff; truncate; }
+.user-email { font-size: 11px; color: rgba(255,255,255,.45); truncate; }
+.sidebar-overlay {
+  display: none; position: fixed; inset: 0; background: rgba(0,0,0,.5); z-index: 99;
+}
+
+/* ─── MAIN AREA ─────────────────────────────────────────── */
+#main {
+  margin-left: var(--sidebar-w);
+  flex: 1; display: flex; flex-direction: column;
+  min-height: 100vh;
+}
+.topbar {
+  height: var(--header-h);
+  background: var(--white);
+  border-bottom: 1px solid var(--gray-200);
+  display: flex; align-items: center; padding: 0 28px; gap: 16px;
+  position: sticky; top: 0; z-index: 50;
+}
+.topbar-hamburger { display: none; }
+.topbar-title { font-family: 'League Spartan', sans-serif; font-size: 19px; font-weight: 800; color: var(--navy); }
+.topbar-right { display: flex; align-items: center; gap: 10px; margin-left: auto; }
+.page-content { padding: 28px; flex: 1; }
+
+/* ─── DASHBOARD ─────────────────────────────────────────── */
+.stats-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-bottom: 28px; }
+.stat-card {
+  background: var(--white); border: 1px solid var(--gray-200); border-radius: var(--r-lg);
+  padding: 20px 22px; position: relative; overflow: hidden;
+}
+.stat-card::before {
+  content: ''; position: absolute; right: -20px; top: -20px;
+  width: 80px; height: 80px; border-radius: 50%;
+  background: var(--stat-bg, rgba(37,99,235,.06));
+}
+.stat-label { font-size: 12px; font-weight: 600; color: var(--gray-400); text-transform: uppercase; letter-spacing: .5px; margin-bottom: 8px; }
+.stat-value { font-family: 'League Spartan', sans-serif; font-size: 28px; font-weight: 800; color: var(--navy); }
+.stat-meta { font-size: 11.5px; color: var(--gray-400); margin-top: 4px; }
+.stat-icon { font-size: 20px; margin-bottom: 8px; }
+.dash-grid { display: grid; grid-template-columns: 1fr 340px; gap: 20px; }
+.section-title { font-family: 'League Spartan', sans-serif; font-size: 17px; font-weight: 700; color: var(--navy); margin-bottom: 16px; }
+.activity-item {
+  display: flex; align-items: flex-start; gap: 12px; padding: 12px 0;
+  border-bottom: 1px solid var(--gray-100);
+}
+.activity-item:last-child { border-bottom: none; }
+.activity-dot {
+  width: 8px; height: 8px; border-radius: 50%; background: var(--blue); flex-shrink: 0; margin-top: 5px;
+}
+.activity-text { font-size: 13px; color: var(--gray-600); line-height: 1.5; }
+.activity-time { font-size: 11px; color: var(--gray-400); margin-top: 2px; }
+.quick-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.qa-btn {
+  background: var(--sky-light); border: 1.5px solid var(--sky);
+  border-radius: var(--r); padding: 14px 12px;
+  display: flex; flex-direction: column; align-items: flex-start; gap: 6px;
+  cursor: pointer; transition: all .18s; text-align: left;
+}
+.qa-btn:hover { background: #DBEAFE; border-color: var(--blue-light); transform: translateY(-1px); }
+.qa-icon { font-size: 18px; }
+.qa-label { font-size: 12px; font-weight: 600; color: var(--navy); font-family: 'League Spartan', sans-serif; }
+
+/* ─── CHAT ───────────────────────────────────────────────── */
+.chat-layout { display: grid; grid-template-columns: 260px 1fr; gap: 0; height: calc(100vh - var(--header-h) - 56px); max-height: 760px; border-radius: var(--r-lg); overflow: hidden; border: 1px solid var(--gray-200); background: var(--white); box-shadow: var(--shadow-sm); }
+.chat-sessions { background: var(--gray-50); border-right: 1px solid var(--gray-200); display: flex; flex-direction: column; overflow: hidden; }
+.chat-sessions-header { padding: 16px; border-bottom: 1px solid var(--gray-200); }
+.chat-sessions-title { font-family: 'League Spartan', sans-serif; font-size: 14px; font-weight: 700; color: var(--navy); margin-bottom: 10px; }
+.sessions-list { flex: 1; overflow-y: auto; padding: 8px; }
+.session-item {
+  padding: 10px 12px; border-radius: 8px; cursor: pointer; margin-bottom: 2px;
+  transition: all .18s; border: 1.5px solid transparent;
+}
+.session-item:hover { background: var(--white); border-color: var(--gray-200); }
+.session-item.active { background: var(--white); border-color: var(--blue-light); }
+.session-title { font-size: 12.5px; font-weight: 600; color: var(--gray-800); margin-bottom: 3px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.session-meta { font-size: 11px; color: var(--gray-400); }
+.chat-main { display: flex; flex-direction: column; }
+.chat-topbar { padding: 14px 20px; border-bottom: 1px solid var(--gray-200); display: flex; align-items: center; gap: 10px; }
+.chat-assistant-badge { display: flex; align-items: center; gap: 8px; }
+.assistant-avatar { width: 32px; height: 32px; border-radius: 8px; background: linear-gradient(135deg, var(--navy) 0%, var(--blue) 100%); display: flex; align-items: center; justify-content: center; font-size: 15px; }
+.assistant-name { font-family: 'League Spartan', sans-serif; font-size: 14px; font-weight: 700; color: var(--navy); }
+.assistant-status { font-size: 11px; color: var(--green); display: flex; align-items: center; gap: 4px; }
+.assistant-status::before { content: ''; width: 6px; height: 6px; border-radius: 50%; background: var(--green); display: inline-block; }
+.messages-area { flex: 1; overflow-y: auto; padding: 20px; display: flex; flex-direction: column; gap: 16px; }
+.msg { display: flex; gap: 10px; max-width: 85%; animation: msgIn .25s ease; }
+@keyframes msgIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+.msg.user { margin-left: auto; flex-direction: row-reverse; }
+.msg-avatar { width: 30px; height: 30px; border-radius: 8px; flex-shrink: 0; display: flex; align-items: center; justify-content: center; font-size: 13px; }
+.msg-avatar.ai { background: linear-gradient(135deg, var(--navy) 0%, var(--blue) 100%); }
+.msg-avatar.user { background: linear-gradient(135deg, var(--blue) 0%, #7C3AED 100%); font-size: 11px; font-weight: 700; color: #fff; font-family: 'League Spartan',sans-serif; }
+.msg-bubble { padding: 12px 16px; border-radius: 12px; font-size: 13.5px; line-height: 1.6; }
+.msg.ai .msg-bubble { background: var(--gray-100); color: var(--gray-800); border-bottom-left-radius: 4px; }
+.msg.user .msg-bubble { background: var(--navy); color: #fff; border-bottom-right-radius: 4px; }
+.msg-bubble pre { background: rgba(0,0,0,.08); border-radius: 6px; padding: 10px; margin: 8px 0; overflow-x: auto; font-size: 12px; }
+.msg-bubble strong { font-weight: 600; }
+.chat-input-area { padding: 16px 20px; border-top: 1px solid var(--gray-200); }
+.chat-input-row { display: flex; gap: 10px; align-items: flex-end; }
+.chat-input-wrap { flex: 1; position: relative; }
+.chat-input-wrap textarea { min-height: 44px; max-height: 120px; padding: 11px 44px 11px 14px; border-radius: 10px; resize: none; }
+.chat-send-btn { position: absolute; right: 8px; bottom: 8px; width: 30px; height: 30px; background: var(--blue); border-radius: 7px; display: flex; align-items: center; justify-content: center; font-size: 14px; color: #fff; cursor: pointer; transition: background .18s; border: none; }
+.chat-send-btn:hover { background: var(--blue-light); }
+.chat-tools-row { display: flex; gap: 6px; margin-bottom: 8px; flex-wrap: wrap; }
+.chat-tool-btn { font-size: 11.5px; padding: 5px 12px; border-radius: 99px; background: var(--sky-light); border: 1px solid var(--sky); color: var(--blue); font-weight: 600; cursor: pointer; transition: all .18s; }
+.chat-tool-btn:hover { background: #DBEAFE; }
+.typing-indicator { display: flex; align-items: center; gap: 4px; padding: 12px 16px; background: var(--gray-100); border-radius: 12px; width: fit-content; }
+.typing-dot { width: 6px; height: 6px; background: var(--gray-400); border-radius: 50%; animation: typingBounce 1.4s infinite ease-in-out; }
+.typing-dot:nth-child(2) { animation-delay: .2s; }
+.typing-dot:nth-child(3) { animation-delay: .4s; }
+@keyframes typingBounce { 0%,60%,100% { transform: translateY(0); } 30% { transform: translateY(-6px); } }
+
+/* ─── ASSISTANTS PAGE ────────────────────────────────────── */
+.assistants-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+.assistant-card {
+  background: var(--white); border: 1.5px solid var(--gray-200);
+  border-radius: var(--r-lg); padding: 24px 20px; cursor: pointer;
+  transition: all .22s; display: flex; flex-direction: column; gap: 12px;
+}
+.assistant-card:hover { border-color: var(--blue-light); box-shadow: var(--shadow-md); transform: translateY(-2px); }
+.assistant-card.active { border-color: var(--blue); background: var(--sky-light); }
+.asst-icon { width: 48px; height: 48px; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 22px; }
+.asst-name { font-family: 'League Spartan', sans-serif; font-size: 16px; font-weight: 700; color: var(--navy); }
+.asst-desc { font-size: 12.5px; color: var(--gray-600); line-height: 1.55; }
+.asst-tags { display: flex; gap: 5px; flex-wrap: wrap; }
+
+/* ─── DOCUMENTS ─────────────────────────────────────────── */
+.docs-toolbar { display: flex; gap: 10px; margin-bottom: 20px; align-items: center; flex-wrap: wrap; }
+.docs-toolbar input { max-width: 240px; }
+.docs-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 14px; }
+.doc-card {
+  background: var(--white); border: 1.5px solid var(--gray-200);
+  border-radius: var(--r-lg); padding: 18px; cursor: pointer;
+  transition: all .18s; display: flex; flex-direction: column; gap: 10px;
+}
+.doc-card:hover { border-color: var(--blue-light); box-shadow: var(--shadow-sm); }
+.doc-icon { font-size: 28px; }
+.doc-name { font-family: 'League Spartan', sans-serif; font-size: 14px; font-weight: 700; color: var(--navy); }
+.doc-meta { font-size: 11.5px; color: var(--gray-400); }
+.doc-actions { display: flex; gap: 6px; margin-top: auto; }
+
+/* ─── DOCUMENT CREATOR ───────────────────────────────────── */
+#doc-creator { display: none; position: fixed; inset: 0; background: rgba(0,0,0,.5); z-index: 200; align-items: center; justify-content: center; }
+#doc-creator.open { display: flex; }
+.doc-creator-panel {
+  background: var(--white); border-radius: var(--r-lg); width: min(760px, 96vw); max-height: 92vh;
+  display: flex; flex-direction: column; overflow: hidden; box-shadow: var(--shadow-lg);
+}
+.doc-creator-header { padding: 20px 24px; border-bottom: 1px solid var(--gray-200); display: flex; align-items: center; justify-content: space-between; }
+.doc-creator-title { font-family: 'League Spartan', sans-serif; font-size: 18px; font-weight: 800; color: var(--navy); }
+.doc-creator-body { flex: 1; display: grid; grid-template-columns: 220px 1fr; overflow: hidden; }
+.doc-types-list { border-right: 1px solid var(--gray-200); overflow-y: auto; padding: 12px; }
+.doc-type-item {
+  padding: 10px 12px; border-radius: 8px; cursor: pointer; margin-bottom: 4px;
+  font-size: 12.5px; font-weight: 500; color: var(--gray-600);
+  transition: all .18s; display: flex; align-items: center; gap: 8px; border: 1.5px solid transparent;
+}
+.doc-type-item:hover { background: var(--gray-50); }
+.doc-type-item.active { background: var(--sky-light); border-color: var(--blue-light); color: var(--navy); font-weight: 600; }
+.doc-form-area { padding: 20px; overflow-y: auto; }
+.doc-form-title { font-family: 'League Spartan', sans-serif; font-size: 15px; font-weight: 700; color: var(--navy); margin-bottom: 4px; }
+.doc-form-desc { font-size: 12px; color: var(--gray-400); margin-bottom: 20px; }
+.form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 14px; }
+.doc-creator-footer { padding: 16px 24px; border-top: 1px solid var(--gray-200); display: flex; justify-content: flex-end; gap: 10px; }
+
+/* ─── DUE DILIGENCE ─────────────────────────────────────── */
+.dd-header { display: flex; align-items: center; gap: 16px; margin-bottom: 24px; flex-wrap: wrap; }
+.dd-progress-ring { position: relative; display: inline-flex; }
+.dd-stats { display: grid; grid-template-columns: repeat(4,1fr); gap: 12px; margin-bottom: 24px; }
+.dd-stat { background: var(--white); border: 1px solid var(--gray-200); border-radius: var(--r); padding: 14px 16px; }
+.dd-stat-val { font-family: 'League Spartan', sans-serif; font-size: 22px; font-weight: 800; color: var(--navy); }
+.dd-stat-label { font-size: 11.5px; color: var(--gray-400); margin-top: 2px; }
+.dd-section { background: var(--white); border: 1px solid var(--gray-200); border-radius: var(--r-lg); margin-bottom: 14px; overflow: hidden; }
+.dd-section-header {
+  padding: 14px 20px; display: flex; align-items: center; justify-content: space-between;
+  cursor: pointer; transition: background .15s; user-select: none;
+}
+.dd-section-header:hover { background: var(--gray-50); }
+.dd-section-title { font-family: 'League Spartan', sans-serif; font-size: 14px; font-weight: 700; color: var(--navy); display: flex; align-items: center; gap: 8px; }
+.dd-section-body { padding: 4px 20px 16px; display: none; }
+.dd-section.open .dd-section-body { display: block; }
+.dd-section.open .dd-chevron { transform: rotate(180deg); }
+.dd-chevron { transition: transform .2s; color: var(--gray-400); }
+.dd-item {
+  display: flex; align-items: flex-start; gap: 10px; padding: 10px 0;
+  border-bottom: 1px solid var(--gray-100);
+}
+.dd-item:last-child { border-bottom: none; }
+.dd-check { width: 18px; height: 18px; border: 2px solid var(--gray-300); border-radius: 4px; flex-shrink: 0; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all .15s; margin-top: 1px; }
+.dd-check.checked { background: var(--blue); border-color: var(--blue); color: #fff; font-size: 11px; }
+.dd-check.na { background: var(--gray-100); border-color: var(--gray-300); color: var(--gray-400); font-size: 11px; }
+.dd-item-label { font-size: 13px; color: var(--gray-700); line-height: 1.5; flex: 1; }
+.dd-item-priority { font-size: 10.5px; font-weight: 600; padding: 2px 8px; border-radius: 99px; }
+.dd-item-priority.high { background: #FEF2F2; color: var(--red); }
+.dd-item-priority.medium { background: #FFFBEB; color: var(--amber); }
+.dd-item-priority.low { background: #ECFDF5; color: var(--green); }
+
+/* ─── UPLOAD ZONE ────────────────────────────────────────── */
+.upload-zone {
+  border: 2px dashed var(--gray-200); border-radius: var(--r-lg); padding: 48px 32px;
+  text-align: center; cursor: pointer; transition: all .2s;
+  background: var(--gray-50); margin-bottom: 20px;
+}
+.upload-zone:hover, .upload-zone.drag { border-color: var(--blue-light); background: var(--sky-light); }
+.upload-icon { font-size: 40px; margin-bottom: 12px; }
+.upload-title { font-family: 'League Spartan', sans-serif; font-size: 16px; font-weight: 700; color: var(--navy); margin-bottom: 6px; }
+.upload-sub { font-size: 12.5px; color: var(--gray-400); }
+
+/* ─── PROFILE ────────────────────────────────────────────── */
+.profile-header {
+  background: linear-gradient(135deg, var(--navy) 0%, var(--navy-light) 100%);
+  border-radius: var(--r-lg); padding: 32px; display: flex; align-items: center; gap: 24px; margin-bottom: 24px;
+}
+.profile-avatar-lg {
+  width: 72px; height: 72px; border-radius: 18px; flex-shrink: 0;
+  background: linear-gradient(135deg, var(--blue) 0%, #7C3AED 100%);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 28px; font-weight: 800; color: #fff; font-family: 'League Spartan', sans-serif;
+  border: 3px solid rgba(255,255,255,.2);
+}
+.profile-name { font-family: 'League Spartan', sans-serif; font-size: 22px; font-weight: 800; color: #fff; }
+.profile-role { color: rgba(186,224,255,.75); font-size: 13px; margin-top: 4px; }
+.profile-form { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+
+/* ─── MODAL ──────────────────────────────────────────────── */
+.modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,.5); z-index: 300; display: none; align-items: center; justify-content: center; }
+.modal-overlay.open { display: flex; }
+.modal { background: var(--white); border-radius: var(--r-lg); padding: 28px; width: min(540px, 94vw); max-height: 90vh; overflow-y: auto; box-shadow: var(--shadow-lg); }
+.modal-title { font-family: 'League Spartan', sans-serif; font-size: 20px; font-weight: 800; color: var(--navy); margin-bottom: 6px; }
+.modal-desc { font-size: 13px; color: var(--gray-400); margin-bottom: 20px; }
+.modal-footer { display: flex; justify-content: flex-end; gap: 10px; margin-top: 24px; }
+
+/* ─── DOCUMENT VIEWER ────────────────────────────────────── */
+#doc-viewer { display: none; position: fixed; inset: 0; background: rgba(0,0,0,.5); z-index: 200; align-items: flex-start; justify-content: center; padding: 24px; }
+#doc-viewer.open { display: flex; }
+.doc-viewer-panel { background: var(--white); border-radius: var(--r-lg); width: min(800px, 96vw); max-height: 92vh; display: flex; flex-direction: column; overflow: hidden; box-shadow: var(--shadow-lg); margin-top: auto; margin-bottom: auto; }
+.doc-viewer-header { padding: 16px 24px; border-bottom: 1px solid var(--gray-200); display: flex; align-items: center; justify-content: space-between; }
+.doc-viewer-body { flex: 1; padding: 28px; overflow-y: auto; font-size: 14px; line-height: 1.8; color: var(--gray-700); }
+.doc-viewer-body h1 { font-size: 22px; color: var(--navy); margin-bottom: 16px; border-bottom: 2px solid var(--navy); padding-bottom: 8px; }
+.doc-viewer-body h2 { font-size: 16px; color: var(--navy); margin: 20px 0 8px; }
+.doc-viewer-body h3 { font-size: 14px; color: var(--navy-light); margin: 14px 0 6px; }
+.doc-viewer-body p { margin-bottom: 10px; }
+.doc-viewer-body ol, .doc-viewer-body ul { padding-left: 24px; margin-bottom: 10px; }
+.doc-viewer-footer { padding: 14px 24px; border-top: 1px solid var(--gray-200); display: flex; gap: 10px; justify-content: flex-end; }
+
+/* ─── TOAST ──────────────────────────────────────────────── */
+#toast-container { position: fixed; bottom: 24px; right: 24px; z-index: 9999; display: flex; flex-direction: column; gap: 8px; }
+.toast { background: var(--gray-800); color: #fff; padding: 12px 18px; border-radius: 10px; font-size: 13px; display: flex; align-items: center; gap: 8px; box-shadow: var(--shadow-lg); animation: toastIn .3s ease; }
+.toast.success { background: var(--green); }
+.toast.error { background: var(--red); }
+@keyframes toastIn { from { opacity: 0; transform: translateX(20px); } to { opacity: 1; transform: translateX(0); } }
+
+/* ─── LOADING ────────────────────────────────────────────── */
+.spinner { width: 20px; height: 20px; border: 2.5px solid rgba(255,255,255,.3); border-top-color: #fff; border-radius: 50%; animation: spin .7s linear infinite; }
+.spinner-dark { border-color: rgba(11,29,58,.15); border-top-color: var(--navy); }
+@keyframes spin { to { transform: rotate(360deg); } }
+#page-loader { position: fixed; inset: 0; background: var(--white); display: flex; flex-direction: column; align-items: center; justify-content: center; z-index: 9999; gap: 16px; }
+.loader-logo { font-family: 'League Spartan', sans-serif; font-size: 26px; font-weight: 900; color: var(--navy); }
+.loader-bar { width: 180px; height: 3px; background: var(--gray-200); border-radius: 99px; overflow: hidden; }
+.loader-bar-fill { height: 100%; width: 0; background: linear-gradient(90deg, var(--navy) 0%, var(--blue) 100%); border-radius: 99px; animation: loadFill 1.2s ease-out forwards; }
+@keyframes loadFill { to { width: 100%; } }
+
+/* ─── RESPONSIVE ─────────────────────────────────────────── */
+@media (max-width: 1024px) {
+  .stats-grid { grid-template-columns: repeat(2, 1fr); }
+  .dash-grid { grid-template-columns: 1fr; }
+  .assistants-grid { grid-template-columns: repeat(2,1fr); }
+}
+@media (max-width: 768px) {
+  :root { --sidebar-w: 260px; }
+  #sidebar { transform: translateX(-100%); }
+  #sidebar.open { transform: translateX(0); }
+  .sidebar-overlay.open { display: block; }
+  #main { margin-left: 0; }
+  .topbar-hamburger { display: flex; }
+  .chat-layout { grid-template-columns: 1fr; }
+  .chat-sessions { display: none; }
+  .stats-grid { grid-template-columns: 1fr 1fr; }
+  .page-content { padding: 16px; }
+  .auth-grid { grid-template-columns: 1fr; }
+  .auth-left { display: none; }
+  .assistants-grid { grid-template-columns: 1fr; }
+  .profile-form { grid-template-columns: 1fr; }
+  .doc-creator-body { grid-template-columns: 1fr; }
+  .doc-types-list { display: none; }
+  .form-row { grid-template-columns: 1fr; }
+  .dd-stats { grid-template-columns: repeat(2,1fr); }
+}
+@media (max-width: 480px) {
+  .stats-grid { grid-template-columns: 1fr; }
+  .auth-right { padding: 28px 20px; }
+  .topbar { padding: 0 16px; }
+}
+</style>
+</head>
+<body>
+
+<!-- PAGE LOADER -->
+<div id="page-loader">
+  <div class="loader-logo">TeraPush Legal</div>
+  <div class="loader-bar"><div class="loader-bar-fill"></div></div>
+  <div style="font-size:12px;color:var(--gray-400)">Loading your legal intelligence platform…</div>
+</div>
+
+<!-- AUTH SCREEN -->
+<div id="auth-screen" class="hidden">
+  <div class="auth-grid">
+    <div class="auth-left">
+      <div>
+        <div class="auth-logo">
+          <img src="https://terapush.in/wp-content/uploads/2024/03/TeraPush-Logo.png" onerror="this.style.display='none'" alt="">
+          <div>
+            <div class="auth-logo-text">TeraPush</div>
+            <span class="auth-logo-sub">LEGAL INTELLIGENCE</span>
+          </div>
+        </div>
+        <div class="auth-tagline">AI-Powered Legal <span>Due Diligence</span> for Indian Startups</div>
+        <div class="auth-desc">Draft term sheets, run due diligence, manage fundraise documentation — all powered by Claude AI. Built for the Indian startup ecosystem.</div>
+      </div>
+      <div class="auth-features">
+        <div class="auth-feat"><div class="auth-feat-icon">⚡</div><span>AI-assisted legal document drafting (SHA, SSA, NDA, Term Sheets)</span></div>
+        <div class="auth-feat"><div class="auth-feat-icon">🔍</div><span>Smart due diligence checklists for Series A, B, C fundraises</span></div>
+        <div class="auth-feat"><div class="auth-feat-icon">🤖</div><span>Specialized AI assistants for legal, compliance & cap table</span></div>
+        <div class="auth-feat"><div class="auth-feat-icon">📁</div><span>Secure document vault with AI analysis & extraction</span></div>
+        <div class="auth-feat"><div class="auth-feat-icon">🇮🇳</div><span>Indian regulatory compliance — MCA, SEBI, FEMA, Companies Act</span></div>
+      </div>
+    </div>
+    <div class="auth-right">
+      <div class="auth-tabs">
+        <div class="auth-tab active" onclick="switchAuthTab('login')">Sign In</div>
+        <div class="auth-tab" onclick="switchAuthTab('signup')">Create Account</div>
+      </div>
+      <div id="auth-error" class="error-msg"></div>
+
+      <!-- LOGIN -->
+      <div id="login-form">
+        <div class="auth-title">Welcome back</div>
+        <div class="auth-subtitle">Sign in to your TeraPush Legal workspace</div>
+        <div class="form-group">
+          <label class="form-label">Email Address</label>
+          <input type="email" id="login-email" placeholder="you@company.com">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Password</label>
+          <input type="password" id="login-password" placeholder="••••••••">
+        </div>
+        <button class="btn btn-navy w-full btn-lg" id="login-btn" onclick="handleLogin()" style="margin-top:6px">
+          <span id="login-btn-text">Sign In</span>
+          <div class="spinner hidden" id="login-spinner"></div>
+        </button>
+        <div class="auth-footer" style="margin-top:14px">
+          <a href="#" onclick="switchAuthTab('signup')">Don't have an account? Sign up</a>
+        </div>
+      </div>
+
+      <!-- SIGNUP -->
+      <div id="signup-form" class="hidden">
+        <div class="auth-title">Create your account</div>
+        <div class="auth-subtitle">Join TeraPush Legal — your AI legal co-pilot</div>
+        <div class="form-row">
+          <div class="form-group" style="margin-bottom:0">
+            <label class="form-label">Full Name</label>
+            <input type="text" id="signup-name" placeholder="Your name">
+          </div>
+          <div class="form-group" style="margin-bottom:0">
+            <label class="form-label">Company</label>
+            <input type="text" id="signup-company" placeholder="Startup / Firm">
+          </div>
+        </div>
+        <div class="form-group" style="margin-top:14px">
+          <label class="form-label">Email Address</label>
+          <input type="email" id="signup-email" placeholder="you@company.com">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Role</label>
+          <select id="signup-role">
+            <option value="">Select your role</option>
+            <option>Founder / Co-founder</option>
+            <option>Legal Counsel</option>
+            <option>CFO / Finance</option>
+            <option>VC / Investor</option>
+            <option>Investment Banker</option>
+            <option>CA / CS</option>
+            <option>Other</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Password</label>
+          <input type="password" id="signup-password" placeholder="Min. 8 characters">
+        </div>
+        <button class="btn btn-navy w-full btn-lg" onclick="handleSignup()">
+          <span id="signup-btn-text">Create Account</span>
+          <div class="spinner hidden" id="signup-spinner"></div>
+        </button>
+        <div class="auth-footer">Already have an account? <a href="#" onclick="switchAuthTab('login')">Sign in</a></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- APP SHELL -->
+<div id="app-shell" class="hidden">
+  <!-- Sidebar Overlay (mobile) -->
+  <div class="sidebar-overlay" id="sidebar-overlay" onclick="closeSidebar()"></div>
+
+  <!-- SIDEBAR -->
+  <nav id="sidebar">
+    <div class="sidebar-logo">
+      <img src="https://terapush.in/wp-content/uploads/2024/03/TeraPush-Logo.png" onerror="this.style.display='none'" alt="">
+      <div>
+        <div class="sidebar-logo-text">TeraPush</div>
+        <span class="sidebar-logo-sub">LEGAL INTELLIGENCE</span>
+      </div>
+    </div>
+    <div class="sidebar-nav">
+      <div class="nav-section">
+        <div class="nav-section-label">Workspace</div>
+        <div class="nav-item active" data-page="dashboard" onclick="navigate('dashboard')">
+          <span class="nav-icon">⊞</span> Dashboard
+        </div>
+        <div class="nav-item" data-page="chat" onclick="navigate('chat')">
+          <span class="nav-icon">💬</span> AI Chat
+        </div>
+        <div class="nav-item" data-page="assistants" onclick="navigate('assistants')">
+          <span class="nav-icon">🤖</span> AI Assistants
+        </div>
+      </div>
+      <div class="nav-section">
+        <div class="nav-section-label">Legal Tools</div>
+        <div class="nav-item" data-page="documents" onclick="navigate('documents')">
+          <span class="nav-icon">📄</span> Document Studio
+        </div>
+        <div class="nav-item" data-page="uploads" onclick="navigate('uploads')">
+          <span class="nav-icon">📁</span> Document Vault
+        </div>
+        <div class="nav-item" data-page="dd" onclick="navigate('dd')">
+          <span class="nav-icon">🔍</span> Due Diligence
+        </div>
+        <div class="nav-item" data-page="captable" onclick="navigate('captable')">
+          <span class="nav-icon">📊</span> Cap Table
+        </div>
+      </div>
+      <div class="nav-section">
+        <div class="nav-section-label">Account</div>
+        <div class="nav-item" data-page="profile" onclick="navigate('profile')">
+          <span class="nav-icon">👤</span> Profile
+        </div>
+        <div class="nav-item" onclick="handleLogout()" style="color:rgba(255,150,150,.7)">
+          <span class="nav-icon">↩</span> Sign Out
+        </div>
+      </div>
+    </div>
+    <div class="sidebar-footer">
+      <div class="sidebar-user" onclick="navigate('profile')">
+        <div class="user-avatar" id="sidebar-avatar">U</div>
+        <div class="user-info">
+          <div class="user-name" id="sidebar-name">Loading…</div>
+          <div class="user-email" id="sidebar-email">—</div>
+        </div>
+      </div>
+    </div>
+  </nav>
+
+  <!-- MAIN -->
+  <div id="main">
+    <div class="topbar">
+      <button class="btn btn-icon topbar-hamburger" onclick="toggleSidebar()">☰</button>
+      <div class="topbar-title" id="topbar-title">Dashboard</div>
+      <div class="topbar-right">
+        <button class="btn btn-primary btn-sm" onclick="openDocCreator()">+ New Document</button>
+      </div>
+    </div>
+    <div class="page-content" id="page-content">
+      <!-- pages render here -->
+    </div>
+  </div>
+</div>
+
+<!-- DOCUMENT CREATOR MODAL -->
+<div id="doc-creator">
+  <div class="doc-creator-panel">
+    <div class="doc-creator-header">
+      <div class="doc-creator-title">✦ Create Legal Document</div>
+      <button class="btn btn-icon btn-ghost" onclick="closeDocCreator()">✕</button>
+    </div>
+    <div class="doc-creator-body">
+      <div class="doc-types-list" id="doc-types-list"></div>
+      <div class="doc-form-area" id="doc-form-area"></div>
+    </div>
+    <div class="doc-creator-footer">
+      <button class="btn btn-ghost" onclick="closeDocCreator()">Cancel</button>
+      <button class="btn btn-primary" onclick="generateDocument()">
+        <span id="gen-btn-text">⚡ Generate with AI</span>
+        <div class="spinner hidden" id="gen-spinner"></div>
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- DOCUMENT VIEWER MODAL -->
+<div id="doc-viewer">
+  <div class="doc-viewer-panel">
+    <div class="doc-viewer-header">
+      <div>
+        <div style="font-family:'League Spartan',sans-serif;font-size:16px;font-weight:800;color:var(--navy)" id="viewer-title">Document</div>
+        <div style="font-size:11.5px;color:var(--gray-400)" id="viewer-meta">—</div>
+      </div>
+      <div style="display:flex;gap:8px;align-items:center">
+        <button class="btn btn-ghost btn-sm" onclick="copyDoc()">📋 Copy</button>
+        <button class="btn btn-primary btn-sm" onclick="downloadDoc()">⬇ Download</button>
+        <button class="btn btn-icon btn-ghost" onclick="closeDocViewer()">✕</button>
+      </div>
+    </div>
+    <div class="doc-viewer-body" id="viewer-body"></div>
+  </div>
+</div>
+
+<!-- NEW DD MODAL -->
+<div class="modal-overlay" id="new-dd-modal">
+  <div class="modal">
+    <div class="modal-title">New Due Diligence Checklist</div>
+    <div class="modal-desc">Set up a DD checklist for your deal or fundraise process</div>
+    <div class="form-group"><label class="form-label">Deal / Company Name</label><input id="dd-deal-name" placeholder="e.g. Series A — Acme Tech Pvt Ltd"></div>
+    <div class="form-group"><label class="form-label">Stage</label>
+      <select id="dd-stage">
+        <option>Pre-Seed</option><option>Seed</option><option>Series A</option>
+        <option>Series B</option><option>Series C+</option><option>M&A / Acquisition</option>
+      </select>
+    </div>
+    <div class="form-group"><label class="form-label">Your Role</label>
+      <select id="dd-role">
+        <option>Investor (conducting DD)</option>
+        <option>Startup (being diligenced)</option>
+        <option>Legal Advisor</option>
+      </select>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="closeModal('new-dd-modal')">Cancel</button>
+      <button class="btn btn-primary" onclick="createDDChecklist()">Create Checklist</button>
+    </div>
+  </div>
+</div>
+
+<!-- TOAST CONTAINER -->
+<div id="toast-container"></div>
+
+<!-- ─── SCRIPTS ──────────────────────────────────────────────── -->
+<script>
+// ─── CONFIG — Replace with your actual keys ───────────────────
+const SUPABASE_URL  = 'YOUR_SUPABASE_URL';
+const SUPABASE_KEY  = 'YOUR_SUPABASE_ANON_KEY';
+const CLAUDE_PROXY  = '/api/claude';  // Vercel serverless function
+
+// ─── SUPABASE CLIENT ──────────────────────────────────────────
+const { createClient } = supabase;
+let sb;
+try { sb = createClient(SUPABASE_URL, SUPABASE_KEY); } catch(e) { console.warn('Supabase not configured yet'); }
+
+// ─── APP STATE ────────────────────────────────────────────────
+let currentUser = null;
+let userProfile = null;
+let currentPage = 'dashboard';
+let chatSessions = [];
+let currentSession = null;
+let chatMessages = [];
+let userDocs = [];
+let ddChecklists = [];
+let selectedDocType = null;
+let currentDocContent = '';
+let activeAssistant = 'general';
+let capTableData = { founders: [], investors: [], esops: [] };
+
+const ASSISTANTS = [
+  { id: 'general',    name: 'Legal Counsel',       icon: '⚖️',  color: '#EFF6FF', desc: 'Draft, review, and explain legal documents tailored for Indian startup law.', tags: ['SHA','NDA','Term Sheets','Contracts'], system: 'You are an expert Indian startup legal counsel. You specialize in Companies Act 2013, SEBI regulations, FEMA, and startup fundraising law. Be precise, practical, and help draft legally sound documents.' },
+  { id: 'dd',         name: 'DD Analyst',          icon: '🔍', color: '#F0FDF4', desc: 'Conduct thorough due diligence analysis across legal, financial, and technical dimensions.', tags: ['Due Diligence','Risk Assessment','Audit'], system: 'You are a senior due diligence analyst specializing in Indian startups. You analyze corporate structure, financials, legal compliance, IP, and regulatory standing. Provide structured, actionable DD reports.' },
+  { id: 'captable',   name: 'Cap Table Advisor',   icon: '📊', color: '#FFFBEB', desc: 'Model equity dilution, ESOP pools, liquidation preferences and cap table scenarios.', tags: ['Equity','Dilution','ESOP','Waterfall'], system: 'You are an expert cap table advisor for Indian startups. Help model equity structures, dilution scenarios, ESOP pools, liquidation preferences, anti-dilution clauses and waterfall models. Be quantitative and precise.' },
+  { id: 'compliance', name: 'Compliance Officer',  icon: '🏛️', color: '#FDF4FF', desc: 'Navigate MCA filings, SEBI rules, GST, RBI FEMA compliance for Indian businesses.', tags: ['MCA','SEBI','FEMA','GST','RBI'], system: 'You are an Indian regulatory compliance expert. You cover MCA filings, SEBI regulations, RBI/FEMA compliance for FDI, GST, ROC filings, and Companies Act compliance. Provide specific, actionable guidance.' },
+  { id: 'fundraise',  name: 'Fundraise Navigator', icon: '🚀', color: '#F0FDF4', desc: 'Navigate term sheet negotiations, investor relations, and fundraise strategy for Indian startups.', tags: ['Term Sheet','Negotiations','SAFE','CCD'], system: 'You are a seasoned Indian startup fundraise advisor who has worked on 100+ deals. You understand VC term sheets, investor expectations, negotiation tactics, CCPS/CCD structures, and Indian deal norms.' },
+  { id: 'analyst',    name: 'Financial Analyst',   icon: '💰', color: '#FFF7ED', desc: 'Analyze financial models, valuations, and investment returns for Indian startup deals.', tags: ['Valuation','Financial Model','IRR','DCF'], system: 'You are a financial analyst specializing in Indian startup investments. You help with financial modeling, valuation analysis (DCF, comparable), IRR calculations, and investment structuring.' },
+];
+
+const DOC_TYPES = [
+  { id: 'term-sheet',    label: 'Term Sheet',              icon: '📋', category: 'Fundraising', desc: 'Non-binding investment term sheet for equity fundraise', fields: [{ name: 'company', label: 'Company Name', type: 'text', placeholder: 'ABC Tech Pvt Ltd' },{ name: 'investor', label: 'Investor Name', type: 'text', placeholder: 'XYZ Ventures' },{ name: 'amount', label: 'Investment Amount (₹)', type: 'text', placeholder: '5,00,00,000' },{ name: 'valuation', label: 'Pre-Money Valuation (₹)', type: 'text', placeholder: '20,00,00,000' },{ name: 'stake', label: 'Equity Stake (%)', type: 'text', placeholder: '20' },{ name: 'instrument', label: 'Instrument', type: 'select', options: ['Compulsorily Convertible Preference Shares (CCPS)','Compulsorily Convertible Debentures (CCD)','Equity Shares','Optionally Convertible Debentures (OCD)','SAFE Note'] },{ name: 'use_of_funds', label: 'Use of Funds', type: 'textarea', placeholder: 'Product development, marketing, hiring…' }] },
+  { id: 'sha', label: 'Shareholders Agreement', icon: '🤝', category: 'Fundraising', desc: 'Comprehensive SHA for startup investors and founders', fields: [{ name: 'company', label: 'Company Name', type: 'text', placeholder: '' },{ name: 'founders', label: 'Founder Names', type: 'text', placeholder: 'Founder 1, Founder 2' },{ name: 'investors', label: 'Investor Names', type: 'text', placeholder: 'Investor 1, Investor 2' },{ name: 'governing_law', label: 'Governing Law', type: 'select', options: ['Laws of India (Mumbai jurisdiction)','Laws of India (Delhi jurisdiction)','Laws of India (Bangalore jurisdiction)'] },{ name: 'anti_dilution', label: 'Anti-Dilution', type: 'select', options: ['Weighted Average Broad-Based','Weighted Average Narrow-Based','Full Ratchet','None'] }] },
+  { id: 'ssa', label: 'Share Subscription Agreement', icon: '📝', category: 'Fundraising', desc: 'SSA for issuance of shares/CCPS to investors', fields: [{ name: 'company', label: 'Company Name', type: 'text', placeholder: '' },{ name: 'investor', label: 'Investor Name', type: 'text', placeholder: '' },{ name: 'shares', label: 'Number of Shares / Securities', type: 'text', placeholder: '1,00,000 CCPS' },{ name: 'price', label: 'Subscription Price per Share (₹)', type: 'text', placeholder: '100' },{ name: 'total_consideration', label: 'Total Subscription Amount (₹)', type: 'text', placeholder: '1,00,00,000' },{ name: 'closing_date', label: 'Expected Closing Date', type: 'text', placeholder: 'Within 30 days of execution' }] },
+  { id: 'nda', label: 'Non-Disclosure Agreement', icon: '🔒', category: 'Contracts', desc: 'Mutual or one-way NDA for Indian companies', fields: [{ name: 'party1', label: 'Disclosing Party', type: 'text', placeholder: 'Company A Pvt Ltd' },{ name: 'party2', label: 'Receiving Party', type: 'text', placeholder: 'Company B Pvt Ltd' },{ name: 'type', label: 'NDA Type', type: 'select', options: ['Mutual NDA','One-Way NDA (Disclosing → Receiving)'] },{ name: 'purpose', label: 'Purpose of Disclosure', type: 'textarea', placeholder: 'Evaluation of potential investment / partnership…' },{ name: 'duration', label: 'Confidentiality Period', type: 'select', options: ['1 Year','2 Years','3 Years','5 Years','Indefinite'] }] },
+  { id: 'board-resolution', label: 'Board Resolution', icon: '🏛️', category: 'Corporate', desc: 'Board resolutions for fundraise, appointments, allotments', fields: [{ name: 'company', label: 'Company Name', type: 'text', placeholder: '' },{ name: 'cin', label: 'CIN', type: 'text', placeholder: 'U12345MH2020PTC000000' },{ name: 'resolution_type', label: 'Resolution Type', type: 'select', options: ['Allotment of CCPS/CCD','Appointment of Director','Increase in Authorised Capital','Approval of ESOP Scheme','Approval of SHA/SSA','EGM / AGM Notice'] },{ name: 'date', label: 'Board Meeting Date', type: 'text', placeholder: 'DD/MM/YYYY' },{ name: 'directors', label: 'Directors Present', type: 'textarea', placeholder: 'List of directors present…' }] },
+  { id: 'esop', label: 'ESOP Policy', icon: '💼', category: 'HR & Equity', desc: 'Employee Stock Option Plan policy document', fields: [{ name: 'company', label: 'Company Name', type: 'text', placeholder: '' },{ name: 'pool_size', label: 'ESOP Pool Size (%)', type: 'text', placeholder: '10' },{ name: 'vesting_schedule', label: 'Vesting Schedule', type: 'select', options: ['4-Year with 1-Year Cliff','3-Year with 6-Month Cliff','4-Year Monthly (No Cliff)','Custom'] },{ name: 'exercise_period', label: 'Exercise Period Post-Exit', type: 'select', options: ['90 Days','6 Months','1 Year','2 Years'] },{ name: 'eligible', label: 'Eligible Employees', type: 'textarea', placeholder: 'All permanent employees excluding…' }] },
+  { id: 'convertible-note', label: 'Convertible Note', icon: '💳', category: 'Fundraising', desc: 'Bridge round convertible note / SAFE for Indian startups', fields: [{ name: 'company', label: 'Company Name', type: 'text', placeholder: '' },{ name: 'investor', label: 'Noteholder / Investor', type: 'text', placeholder: '' },{ name: 'principal', label: 'Principal Amount (₹)', type: 'text', placeholder: '50,00,000' },{ name: 'interest', label: 'Interest Rate (% p.a.)', type: 'text', placeholder: '8' },{ name: 'discount', label: 'Conversion Discount (%)', type: 'text', placeholder: '20' },{ name: 'cap', label: 'Valuation Cap (₹)', type: 'text', placeholder: '10,00,00,000' },{ name: 'maturity', label: 'Maturity Date', type: 'text', placeholder: '18 months from execution' }] },
+  { id: 'mou', label: 'Memorandum of Understanding', icon: '🗂️', category: 'Contracts', desc: 'MoU for partnerships, JVs, strategic alliances', fields: [{ name: 'party1', label: 'First Party', type: 'text', placeholder: 'Company A Pvt Ltd' },{ name: 'party2', label: 'Second Party', type: 'text', placeholder: 'Company B Pvt Ltd' },{ name: 'purpose', label: 'Purpose / Scope', type: 'textarea', placeholder: 'Strategic partnership for…' },{ name: 'duration', label: 'Validity Period', type: 'text', placeholder: '12 months, auto-renewable' },{ name: 'exclusivity', label: 'Exclusivity', type: 'select', options: ['Non-Exclusive','Exclusive','Limited Exclusivity'] }] },
+  { id: 'founders-agreement', label: "Founders' Agreement", icon: '🚀', category: 'Corporate', desc: "Co-founder agreement covering roles, equity, vesting", fields: [{ name: 'company', label: 'Company Name', type: 'text', placeholder: '' },{ name: 'founders', label: 'Founders & Equity Split', type: 'textarea', placeholder: 'Founder 1 — 50%\nFounder 2 — 50%' },{ name: 'vesting', label: 'Founder Vesting', type: 'select', options: ['4-Year with 1-Year Cliff','3-Year with 6-Month Cliff','No Vesting'] },{ name: 'ip_assignment', label: 'IP Assignment', type: 'select', options: ['All IP assigned to company','IP assigned except personal projects','Custom'] },{ name: 'noncompete', label: 'Non-Compete Period', type: 'select', options: ['1 Year post-exit','2 Years post-exit','None'] }] },
+  { id: 'employment', label: 'Employment Agreement', icon: '👔', category: 'HR & Equity', desc: 'Standard employment agreement for Indian companies', fields: [{ name: 'company', label: 'Company Name', type: 'text', placeholder: '' },{ name: 'employee', label: 'Employee Name', type: 'text', placeholder: '' },{ name: 'designation', label: 'Designation', type: 'text', placeholder: 'Software Engineer' },{ name: 'salary', label: 'CTC (₹ per annum)', type: 'text', placeholder: '12,00,000' },{ name: 'joining_date', label: 'Date of Joining', type: 'text', placeholder: 'DD/MM/YYYY' },{ name: 'notice_period', label: 'Notice Period', type: 'select', options: ['30 Days','60 Days','90 Days','3 Months'] }] },
+];
+
+// ─── INIT ─────────────────────────────────────────────────────
+window.addEventListener('DOMContentLoaded', async () => {
+  setTimeout(async () => {
+    document.getElementById('page-loader').classList.add('hidden');
+    if (!sb) { showAuth(); return; }
+    const { data: { session } } = await sb.auth.getSession();
+    if (session) { currentUser = session.user; await initApp(); }
+    else showAuth();
+  }, 1400);
+});
+
+async function initApp() {
+  await loadProfile();
+  document.getElementById('auth-screen').classList.add('hidden');
+  document.getElementById('app-shell').classList.remove('hidden');
+  updateSidebarUser();
+  await loadUserData();
+  navigate('dashboard');
+}
+
+// ─── AUTH ─────────────────────────────────────────────────────
+function showAuth() {
+  document.getElementById('auth-screen').classList.remove('hidden');
+  document.getElementById('app-shell').classList.add('hidden');
+}
+
+function switchAuthTab(tab) {
+  document.querySelectorAll('.auth-tab').forEach((t,i) => t.classList.toggle('active', (i===0&&tab==='login')||(i===1&&tab==='signup')));
+  document.getElementById('login-form').classList.toggle('hidden', tab!=='login');
+  document.getElementById('signup-form').classList.toggle('hidden', tab!=='signup');
+  hideAuthError();
+}
+
+function showAuthError(msg) {
+  const el = document.getElementById('auth-error');
+  el.textContent = msg; el.style.display = 'block';
+}
+function hideAuthError() { document.getElementById('auth-error').style.display = 'none'; }
+
+async function handleLogin() {
+  if (!sb) { showAuthError('Supabase not configured. Please add your Supabase credentials.'); return; }
+  const email = document.getElementById('login-email').value.trim();
+  const pass = document.getElementById('login-password').value;
+  if (!email || !pass) { showAuthError('Please fill in all fields.'); return; }
+  setBtnLoading('login-btn', 'login-btn-text', 'login-spinner', true);
+  const { data, error } = await sb.auth.signInWithPassword({ email, password: pass });
+  setBtnLoading('login-btn', 'login-btn-text', 'login-spinner', false, 'Sign In');
+  if (error) { showAuthError(error.message); return; }
+  currentUser = data.user;
+  await initApp();
+}
+
+async function handleSignup() {
+  if (!sb) { showAuthError('Supabase not configured. Please add your Supabase credentials.'); return; }
+  const name = document.getElementById('signup-name').value.trim();
+  const company = document.getElementById('signup-company').value.trim();
+  const email = document.getElementById('signup-email').value.trim();
+  const role = document.getElementById('signup-role').value;
+  const pass = document.getElementById('signup-password').value;
+  if (!name || !email || !pass || !role) { showAuthError('Please fill in all required fields.'); return; }
+  if (pass.length < 8) { showAuthError('Password must be at least 8 characters.'); return; }
+  setBtnLoading('signup-btn', 'signup-btn-text', 'signup-spinner', true);
+  const { data, error } = await sb.auth.signUp({ email, password: pass, options: { data: { full_name: name, company, role } } });
+  setBtnLoading('signup-btn', 'signup-btn-text', 'signup-spinner', false, 'Create Account');
+  if (error) { showAuthError(error.message); return; }
+  if (data.user) {
+    await sb.from('profiles').upsert({ id: data.user.id, full_name: name, company, role, email });
+    currentUser = data.user;
+    await initApp();
+  } else {
+    showAuthError('Please check your email to verify your account.');
+  }
+}
+
+async function handleLogout() {
+  if (sb) await sb.auth.signOut();
+  currentUser = null; userProfile = null; chatSessions = []; currentSession = null;
+  showAuth();
+  showToast('Signed out successfully');
+}
+
+// ─── PROFILE ──────────────────────────────────────────────────
+async function loadProfile() {
+  if (!sb || !currentUser) return;
+  const { data } = await sb.from('profiles').select('*').eq('id', currentUser.id).single();
+  if (data) userProfile = data;
+  else {
+    userProfile = { id: currentUser.id, full_name: currentUser.user_metadata?.full_name || 'User', company: currentUser.user_metadata?.company || '', role: currentUser.user_metadata?.role || '', email: currentUser.email };
+    await sb.from('profiles').upsert(userProfile);
+  }
+}
+
+function updateSidebarUser() {
+  const name = userProfile?.full_name || currentUser?.email || 'User';
+  const email = currentUser?.email || '';
+  document.getElementById('sidebar-name').textContent = name;
+  document.getElementById('sidebar-email').textContent = email;
+  document.getElementById('sidebar-avatar').textContent = name.charAt(0).toUpperCase();
+}
+
+// ─── DATA ─────────────────────────────────────────────────────
+async function loadUserData() {
+  if (!sb || !currentUser) return;
+  const [sessions, docs, checklists] = await Promise.all([
+    sb.from('chat_sessions').select('*').eq('user_id', currentUser.id).order('created_at', { ascending: false }),
+    sb.from('documents').select('*').eq('user_id', currentUser.id).order('created_at', { ascending: false }),
+    sb.from('dd_checklists').select('*').eq('user_id', currentUser.id).order('created_at', { ascending: false }),
+  ]);
+  chatSessions = sessions.data || [];
+  userDocs = docs.data || [];
+  ddChecklists = checklists.data || [];
+}
+
+// ─── NAVIGATION ───────────────────────────────────────────────
+async function navigate(page) {
+  currentPage = page;
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+  const activeNav = document.querySelector(`.nav-item[data-page="${page}"]`);
+  if (activeNav) activeNav.classList.add('active');
+  const titles = { dashboard:'Dashboard', chat:'AI Chat', assistants:'AI Assistants', documents:'Document Studio', uploads:'Document Vault', dd:'Due Diligence', captable:'Cap Table', profile:'Profile' };
+  document.getElementById('topbar-title').textContent = titles[page] || page;
+  closeSidebar();
+  const pc = document.getElementById('page-content');
+  pc.innerHTML = '<div style="text-align:center;padding:40px"><div class="spinner spinner-dark" style="margin:auto"></div></div>';
+  switch(page) {
+    case 'dashboard':  renderDashboard(); break;
+    case 'chat':       renderChat(); break;
+    case 'assistants': renderAssistants(); break;
+    case 'documents':  renderDocuments(); break;
+    case 'uploads':    renderUploads(); break;
+    case 'dd':         renderDD(); break;
+    case 'captable':   renderCapTable(); break;
+    case 'profile':    renderProfile(); break;
+    default: pc.innerHTML = '<div style="padding:40px;text-align:center;color:var(--gray-400)">Page coming soon</div>';
+  }
+}
+
+// ─── DASHBOARD ────────────────────────────────────────────────
+function renderDashboard() {
+  const pc = document.getElementById('page-content');
+  const docCount = userDocs.length;
+  const ddCount = ddChecklists.length;
+  const msgCount = chatMessages.length;
+  pc.innerHTML = `
+  <div class="stats-grid">
+    <div class="stat-card" style="--stat-bg:rgba(37,99,235,.07)">
+      <div class="stat-icon">📄</div>
+      <div class="stat-label">Documents Created</div>
+      <div class="stat-value">${docCount}</div>
+      <div class="stat-meta">Legal documents generated</div>
+    </div>
+    <div class="stat-card" style="--stat-bg:rgba(16,185,129,.07)">
+      <div class="stat-icon">🔍</div>
+      <div class="stat-label">DD Checklists</div>
+      <div class="stat-value">${ddCount}</div>
+      <div class="stat-meta">Due diligence in progress</div>
+    </div>
+    <div class="stat-card" style="--stat-bg:rgba(245,158,11,.07)">
+      <div class="stat-icon">💬</div>
+      <div class="stat-label">AI Conversations</div>
+      <div class="stat-value">${chatSessions.length}</div>
+      <div class="stat-meta">Chat sessions started</div>
+    </div>
+    <div class="stat-card" style="--stat-bg:rgba(124,58,237,.07)">
+      <div class="stat-icon">🤖</div>
+      <div class="stat-label">AI Assistants</div>
+      <div class="stat-value">${ASSISTANTS.length}</div>
+      <div class="stat-meta">Specialized legal AI agents</div>
+    </div>
+  </div>
+  <div class="dash-grid">
+    <div>
+      <div class="card">
+        <div class="card-header" style="padding-bottom:16px"><div class="section-title">Quick Actions</div></div>
+        <div class="card-body" style="padding-top:0">
+          <div class="quick-actions">
+            <div class="qa-btn" onclick="openDocCreator()"><div class="qa-icon">📋</div><div class="qa-label">Term Sheet</div><div style="font-size:11px;color:var(--gray-400)">Draft with AI</div></div>
+            <div class="qa-btn" onclick="openDocCreator()"><div class="qa-icon">🤝</div><div class="qa-label">SHA / SSA</div><div style="font-size:11px;color:var(--gray-400)">Generate template</div></div>
+            <div class="qa-btn" onclick="navigate('dd')"><div class="qa-icon">🔍</div><div class="qa-label">Due Diligence</div><div style="font-size:11px;color:var(--gray-400)">Start DD checklist</div></div>
+            <div class="qa-btn" onclick="openAssistant('general')"><div class="qa-icon">⚖️</div><div class="qa-label">Legal Chat</div><div style="font-size:11px;color:var(--gray-400)">Ask AI counsel</div></div>
+            <div class="qa-btn" onclick="openAssistant('captable')"><div class="qa-icon">📊</div><div class="qa-label">Cap Table</div><div style="font-size:11px;color:var(--gray-400)">Model equity</div></div>
+            <div class="qa-btn" onclick="openAssistant('compliance')"><div class="qa-icon">🏛️</div><div class="qa-label">Compliance</div><div style="font-size:11px;color:var(--gray-400)">MCA / SEBI / FEMA</div></div>
+          </div>
+        </div>
+      </div>
+      <div class="card" style="margin-top:16px">
+        <div class="card-header"><div class="section-title">Recent Documents</div></div>
+        <div class="card-body" style="padding-top:8px">
+          ${userDocs.length === 0 ? `<div style="text-align:center;padding:24px;color:var(--gray-400)"><div style="font-size:32px;margin-bottom:8px">📄</div><div style="font-size:13px">No documents yet. Create your first legal document.</div><button class="btn btn-primary btn-sm" style="margin-top:12px" onclick="openDocCreator()">+ Create Document</button></div>` :
+          userDocs.slice(0,5).map(d => `
+            <div class="activity-item" onclick="viewDocument(${JSON.stringify(d).replace(/"/g,'&quot;')})" style="cursor:pointer">
+              <div style="font-size:20px">${DOC_TYPES.find(t=>t.id===d.type)?.icon||'📄'}</div>
+              <div style="flex:1;min-width:0">
+                <div style="font-size:13px;font-weight:600;color:var(--navy)">${d.title}</div>
+                <div class="activity-time">${DOC_TYPES.find(t=>t.id===d.type)?.label||d.type} · ${formatDate(d.created_at)}</div>
+              </div>
+              <span class="badge badge-blue">${d.status||'Draft'}</span>
+            </div>`).join('')}
+        </div>
+      </div>
+    </div>
+    <div>
+      <div class="card">
+        <div class="card-header"><div class="section-title">AI Assistants</div></div>
+        <div class="card-body" style="padding-top:8px">
+          ${ASSISTANTS.slice(0,4).map(a => `
+            <div style="display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid var(--gray-100);cursor:pointer" onclick="openAssistant('${a.id}')">
+              <div style="width:36px;height:36px;border-radius:9px;background:${a.color};display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0">${a.icon}</div>
+              <div style="flex:1;min-width:0">
+                <div style="font-size:13px;font-weight:600;color:var(--navy);font-family:'League Spartan',sans-serif">${a.name}</div>
+                <div style="font-size:11.5px;color:var(--gray-400);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${a.desc.substring(0,50)}…</div>
+              </div>
+            </div>`).join('')}
+          <button class="btn btn-ghost btn-sm w-full" style="margin-top:10px" onclick="navigate('assistants')">View All Assistants →</button>
+        </div>
+      </div>
+      <div class="card" style="margin-top:16px">
+        <div class="card-header"><div class="section-title">Indian Startup Law Tips</div></div>
+        <div class="card-body" style="padding-top:8px">
+          ${[
+            { icon:'📌', text:'Use CCPS (Compulsorily Convertible Preference Shares) for Series A — standard in Indian VC deals.' },
+            { icon:'⚠️', text:'FEMA compliance required for foreign investment — file FC-GPR within 30 days of allotment.' },
+            { icon:'💡', text:'Pre-emptive rights, anti-dilution, and drag-along are non-negotiable investor protections in India.' },
+            { icon:'📋', text:'Board composition must comply with Companies Act 2013 — minimum 2 directors for Pvt Ltd.' },
+          ].map(t => `<div class="activity-item"><div style="font-size:16px">${t.icon}</div><div class="activity-text">${t.text}</div></div>`).join('')}
+        </div>
+      </div>
+    </div>
+  </div>`;
+}
+
+// ─── CHAT ─────────────────────────────────────────────────────
+function renderChat() {
+  const pc = document.getElementById('page-content');
+  pc.innerHTML = `
+  <div class="chat-layout">
+    <div class="chat-sessions">
+      <div class="chat-sessions-header">
+        <div class="chat-sessions-title">Chat History</div>
+        <button class="btn btn-primary btn-sm w-full" onclick="newChatSession()">+ New Chat</button>
+      </div>
+      <div class="sessions-list" id="sessions-list"></div>
+    </div>
+    <div class="chat-main" id="chat-main-area">
+      <div class="chat-topbar">
+        <div class="chat-assistant-badge">
+          <div class="assistant-avatar">${ASSISTANTS.find(a=>a.id===activeAssistant)?.icon||'🤖'}</div>
+          <div>
+            <div class="assistant-name">${ASSISTANTS.find(a=>a.id===activeAssistant)?.name||'Legal AI'}</div>
+            <div class="assistant-status">Online · Claude AI</div>
+          </div>
+        </div>
+        <div style="margin-left:auto;display:flex;gap:6px">
+          <select style="padding:6px 10px;font-size:12px;border-radius:8px;width:auto" onchange="switchAssistant(this.value)" id="assistant-select">
+            ${ASSISTANTS.map(a=>`<option value="${a.id}" ${a.id===activeAssistant?'selected':''}>${a.name}</option>`).join('')}
+          </select>
+        </div>
+      </div>
+      <div class="messages-area" id="messages-area">
+        <div class="msg ai">
+          <div class="msg-avatar ai">${ASSISTANTS.find(a=>a.id===activeAssistant)?.icon||'🤖'}</div>
+          <div class="msg-bubble">
+            <strong>Hello! I'm your ${ASSISTANTS.find(a=>a.id===activeAssistant)?.name||'Legal AI'}.</strong><br><br>
+            ${ASSISTANTS.find(a=>a.id===activeAssistant)?.desc||'How can I help with your legal needs today?'}<br><br>
+            Some things I can help with:
+            <ul style="margin-top:6px;padding-left:16px">${(ASSISTANTS.find(a=>a.id===activeAssistant)?.tags||[]).map(t=>`<li>${t}</li>`).join('')}</ul>
+          </div>
+        </div>
+      </div>
+      <div class="chat-input-area">
+        <div class="chat-tools-row">
+          <div class="chat-tool-btn" onclick="insertPrompt('Draft a term sheet for a ₹5Cr Series A investment')">📋 Term Sheet</div>
+          <div class="chat-tool-btn" onclick="insertPrompt('Explain liquidation preference in Indian VC deals')">⚖️ Liquidation Pref</div>
+          <div class="chat-tool-btn" onclick="insertPrompt('What are standard CCPS terms for Series A in India?')">💰 CCPS Terms</div>
+          <div class="chat-tool-btn" onclick="insertPrompt('Review this SHA clause for red flags')">🔍 Review Clause</div>
+        </div>
+        <div class="chat-input-row">
+          <div class="chat-input-wrap">
+            <textarea id="chat-input" placeholder="Ask your legal question, request a document draft, or get compliance guidance…" rows="1" onkeydown="handleChatKey(event)"></textarea>
+            <button class="chat-send-btn" onclick="sendMessage()">↑</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>`;
+  renderSessionsList();
+  if (currentSession) loadSessionMessages(currentSession.id);
+}
+
+function renderSessionsList() {
+  const list = document.getElementById('sessions-list');
+  if (!list) return;
+  if (chatSessions.length === 0) { list.innerHTML = `<div style="padding:16px;text-align:center;font-size:12px;color:var(--gray-400)">No chat history yet.<br>Start a new conversation.</div>`; return; }
+  list.innerHTML = chatSessions.map(s => `
+    <div class="session-item ${currentSession?.id===s.id?'active':''}" onclick="loadSessionMessages('${s.id}')">
+      <div class="session-title">${s.title||'New Chat'}</div>
+      <div class="session-meta">${ASSISTANTS.find(a=>a.id===s.assistant_type)?.name||'Legal AI'} · ${formatDate(s.created_at)}</div>
+    </div>`).join('');
+}
+
+async function newChatSession() {
+  const title = 'New Chat · ' + new Date().toLocaleDateString('en-IN', { day:'numeric', month:'short' });
+  if (sb && currentUser) {
+    const { data } = await sb.from('chat_sessions').insert({ user_id: currentUser.id, title, assistant_type: activeAssistant }).select().single();
+    if (data) { currentSession = data; chatSessions.unshift(data); }
+  } else {
+    currentSession = { id: Date.now().toString(), title, assistant_type: activeAssistant, created_at: new Date().toISOString() };
+    chatSessions.unshift(currentSession);
+  }
+  chatMessages = [];
+  renderSessionsList();
+  const area = document.getElementById('messages-area');
+  if (area) { area.innerHTML = `<div class="msg ai"><div class="msg-avatar ai">${ASSISTANTS.find(a=>a.id===activeAssistant)?.icon||'🤖'}</div><div class="msg-bubble">New chat started. How can I assist with your legal needs?</div></div>`; }
+}
+
+async function loadSessionMessages(sessionId) {
+  currentSession = chatSessions.find(s => s.id === sessionId);
+  if (!currentSession) return;
+  renderSessionsList();
+  if (sb && currentUser) {
+    const { data } = await sb.from('chat_messages').select('*').eq('session_id', sessionId).order('created_at');
+    chatMessages = data || [];
+  }
+  const area = document.getElementById('messages-area');
+  if (!area) return;
+  const asst = ASSISTANTS.find(a => a.id === (currentSession.assistant_type || activeAssistant)) || ASSISTANTS[0];
+  area.innerHTML = `<div class="msg ai"><div class="msg-avatar ai">${asst.icon}</div><div class="msg-bubble"><strong>${asst.name}</strong><br>Continuing this conversation. Ask me anything!</div></div>`;
+  chatMessages.forEach(m => appendMessage(m.role, m.content));
+  area.scrollTop = area.scrollHeight;
+}
+
+function switchAssistant(id) {
+  activeAssistant = id;
+  const asst = ASSISTANTS.find(a => a.id === id);
+  document.querySelector('.assistant-name').textContent = asst?.name || 'Legal AI';
+  document.querySelector('.assistant-avatar').textContent = asst?.icon || '🤖';
+}
+
+function insertPrompt(text) {
+  const input = document.getElementById('chat-input');
+  if (input) { input.value = text; input.focus(); }
+}
+
+function handleChatKey(e) {
+  if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendMessage(); }
+}
+
+async function sendMessage() {
+  const input = document.getElementById('chat-input');
+  if (!input) return;
+  const text = input.value.trim();
+  if (!text) return;
+  input.value = '';
+  if (!currentSession) await newChatSession();
+  appendMessage('user', text);
+  chatMessages.push({ role: 'user', content: text });
+  if (sb && currentUser && currentSession) {
+    await sb.from('chat_messages').insert({ session_id: currentSession.id, user_id: currentUser.id, role: 'user', content: text });
+    // Update session title if first message
+    if (chatMessages.filter(m=>m.role==='user').length === 1) {
+      const t = text.substring(0,50) + (text.length>50?'…':'');
+      await sb.from('chat_sessions').update({ title: t }).eq('id', currentSession.id);
+      if (currentSession) currentSession.title = t;
+      renderSessionsList();
+    }
+  }
+  showTyping();
+  const asst = ASSISTANTS.find(a => a.id === activeAssistant) || ASSISTANTS[0];
+  const msgs = chatMessages.slice(-10).map(m => ({ role: m.role, content: m.content }));
+  try {
+    const res = await fetch(CLAUDE_PROXY, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ messages: msgs, system: asst.system, max_tokens: 1500 })
+    });
+    const data = await res.json();
+    hideTyping();
+    if (data.content?.[0]?.text) {
+      const reply = data.content[0].text;
+      chatMessages.push({ role: 'assistant', content: reply });
+      appendMessage('assistant', reply);
+      if (sb && currentUser && currentSession) {
+        await sb.from('chat_messages').insert({ session_id: currentSession.id, user_id: currentUser.id, role: 'assistant', content: reply });
+      }
+    } else {
+      appendMessage('assistant', 'I apologize, I encountered an issue. Please check that the Claude API key is configured on the server.');
+    }
+  } catch(e) {
+    hideTyping();
+    appendMessage('assistant', '⚠️ Could not connect to AI service. Make sure the server is running and ANTHROPIC_API_KEY is set in Vercel environment variables.');
+  }
+}
+
+function appendMessage(role, content) {
+  const area = document.getElementById('messages-area');
+  if (!area) return;
+  const isUser = role === 'user';
+  const asst = ASSISTANTS.find(a => a.id === activeAssistant) || ASSISTANTS[0];
+  const avatarHTML = isUser
+    ? `<div class="msg-avatar user">${(userProfile?.full_name||'U').charAt(0)}</div>`
+    : `<div class="msg-avatar ai">${asst.icon}</div>`;
+  const formatted = formatMarkdown(content);
+  const div = document.createElement('div');
+  div.className = `msg ${isUser ? 'user' : 'ai'}`;
+  div.innerHTML = `${avatarHTML}<div class="msg-bubble">${formatted}</div>`;
+  area.appendChild(div);
+  area.scrollTop = area.scrollHeight;
+}
+
+function showTyping() {
+  const area = document.getElementById('messages-area');
+  if (!area) return;
+  const asst = ASSISTANTS.find(a => a.id === activeAssistant) || ASSISTANTS[0];
+  const div = document.createElement('div');
+  div.className = 'msg ai'; div.id = 'typing-indicator';
+  div.innerHTML = `<div class="msg-avatar ai">${asst.icon}</div><div class="typing-indicator"><div class="typing-dot"></div><div class="typing-dot"></div><div class="typing-dot"></div></div>`;
+  area.appendChild(div);
+  area.scrollTop = area.scrollHeight;
+}
+function hideTyping() { document.getElementById('typing-indicator')?.remove(); }
+
+// ─── ASSISTANTS PAGE ─────────────────────────────────────────
+function renderAssistants() {
+  const pc = document.getElementById('page-content');
+  pc.innerHTML = `
+  <div style="margin-bottom:24px">
+    <h2 style="font-family:'League Spartan',sans-serif;font-size:22px;font-weight:800;color:var(--navy);margin-bottom:6px">AI Legal Assistants</h2>
+    <p style="color:var(--gray-400);font-size:13px">Specialized AI agents trained on Indian startup law, fundraising, compliance, and more.</p>
+  </div>
+  <div class="assistants-grid">
+    ${ASSISTANTS.map(a => `
+    <div class="assistant-card ${activeAssistant===a.id?'active':''}" onclick="openAssistant('${a.id}')">
+      <div class="asst-icon" style="background:${a.color}">${a.icon}</div>
+      <div>
+        <div class="asst-name">${a.name}</div>
+        <div class="asst-desc">${a.desc}</div>
+      </div>
+      <div class="asst-tags">${a.tags.map(t=>`<span class="badge badge-blue">${t}</span>`).join('')}</div>
+      <button class="btn btn-primary btn-sm" style="margin-top:4px">Chat with ${a.name.split(' ')[0]} →</button>
+    </div>`).join('')}
+  </div>`;
+}
+
+function openAssistant(id) {
+  activeAssistant = id;
+  navigate('chat');
+  setTimeout(() => newChatSession(), 100);
+}
+
+// ─── DOCUMENTS ────────────────────────────────────────────────
+function renderDocuments() {
+  const pc = document.getElementById('page-content');
+  pc.innerHTML = `
+  <div class="docs-toolbar">
+    <input placeholder="🔍  Search documents…" oninput="filterDocs(this.value)" style="max-width:240px">
+    <button class="btn btn-primary" onclick="openDocCreator()">+ Create Document</button>
+    <div style="margin-left:auto;display:flex;gap:8px;flex-wrap:wrap">
+      ${['All','Fundraising','Contracts','Corporate','HR & Equity'].map(c=>`<button class="btn btn-ghost btn-sm doc-filter-btn" data-cat="${c}" onclick="setDocFilter('${c}',this)">${c}</button>`).join('')}
+    </div>
+  </div>
+  <div id="docs-grid" class="docs-grid">
+    ${renderDocCards(userDocs)}
+  </div>`;
+  document.querySelector('.doc-filter-btn')?.classList.add('active');
+}
+
+function renderDocCards(docs) {
+  if (docs.length === 0) return `<div style="grid-column:1/-1;text-align:center;padding:60px 20px;color:var(--gray-400)"><div style="font-size:48px;margin-bottom:12px">📂</div><div style="font-size:15px;font-weight:600;color:var(--gray-600);margin-bottom:6px">No documents yet</div><div style="font-size:13px;margin-bottom:16px">Create your first legal document using AI</div><button class="btn btn-primary" onclick="openDocCreator()">+ Create Document</button></div>`;
+  return docs.map(d => {
+    const type = DOC_TYPES.find(t => t.id === d.type);
+    return `<div class="doc-card" onclick="viewDocumentById('${d.id}')">
+      <div class="doc-icon">${type?.icon||'📄'}</div>
+      <div class="doc-name">${d.title}</div>
+      <div class="doc-meta">${type?.label||d.type} · ${formatDate(d.created_at)}</div>
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-top:4px">
+        <span class="badge badge-${d.status==='Final'?'green':'blue'}">${d.status||'Draft'}</span>
+        <div class="doc-actions" onclick="event.stopPropagation()">
+          <button class="btn btn-ghost btn-sm" onclick="viewDocumentById('${d.id}')">View</button>
+          <button class="btn btn-danger btn-sm" onclick="deleteDoc('${d.id}')">✕</button>
+        </div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function filterDocs(q) {
+  const filtered = q ? userDocs.filter(d => d.title.toLowerCase().includes(q.toLowerCase())) : userDocs;
+  document.getElementById('docs-grid').innerHTML = renderDocCards(filtered);
+}
+
+function setDocFilter(cat, btn) {
+  document.querySelectorAll('.doc-filter-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  const filtered = cat === 'All' ? userDocs : userDocs.filter(d => (DOC_TYPES.find(t=>t.id===d.type)?.category||'') === cat);
+  document.getElementById('docs-grid').innerHTML = renderDocCards(filtered);
+}
+
+async function deleteDoc(id) {
+  if (!confirm('Delete this document?')) return;
+  if (sb && currentUser) await sb.from('documents').delete().eq('id', id);
+  userDocs = userDocs.filter(d => d.id !== id);
+  renderDocuments();
+  showToast('Document deleted', 'success');
+}
+
+// ─── DOCUMENT CREATOR ─────────────────────────────────────────
+function openDocCreator() {
+  document.getElementById('doc-creator').classList.add('open');
+  const list = document.getElementById('doc-types-list');
+  const categories = [...new Set(DOC_TYPES.map(d => d.category))];
+  list.innerHTML = categories.map(cat => `
+    <div style="font-size:10px;font-weight:700;letter-spacing:1px;color:var(--gray-400);padding:8px 12px 4px;text-transform:uppercase">${cat}</div>
+    ${DOC_TYPES.filter(d=>d.category===cat).map(d=>`
+      <div class="doc-type-item ${selectedDocType?.id===d.id?'active':''}" onclick="selectDocType('${d.id}')">
+        <span>${d.icon}</span> ${d.label}
+      </div>`).join('')}
+  `).join('');
+  if (!selectedDocType) selectDocType(DOC_TYPES[0].id);
+}
+
+function closeDocCreator() { document.getElementById('doc-creator').classList.remove('open'); }
+
+function selectDocType(id) {
+  selectedDocType = DOC_TYPES.find(d => d.id === id);
+  document.querySelectorAll('.doc-type-item').forEach(el => el.classList.remove('active'));
+  document.querySelector(`.doc-type-item[onclick="selectDocType('${id}')"]`)?.classList.add('active');
+  const area = document.getElementById('doc-form-area');
+  area.innerHTML = `
+    <div class="doc-form-title">${selectedDocType.icon} ${selectedDocType.label}</div>
+    <div class="doc-form-desc">${selectedDocType.desc}</div>
+    ${renderDocFields(selectedDocType.fields)}
+  `;
+}
+
+function renderDocFields(fields) {
+  let html = '';
+  const pairs = [];
+  let i = 0;
+  while (i < fields.length) {
+    if (i+1 < fields.length && fields[i].type !== 'textarea' && fields[i+1].type !== 'textarea') {
+      pairs.push([fields[i], fields[i+1]]); i += 2;
+    } else { pairs.push([fields[i]]); i++; }
+  }
+  pairs.forEach(pair => {
+    if (pair.length === 2) {
+      html += `<div class="form-row">${pair.map(f=>renderField(f)).join('')}</div>`;
+    } else {
+      html += `<div class="form-group">${renderField(pair[0])}</div>`;
+    }
+  });
+  return html;
+}
+
+function renderField(f) {
+  const id = `doc-field-${f.name}`;
+  if (f.type === 'select') return `<div><label class="form-label">${f.label}</label><select id="${id}">${f.options.map(o=>`<option>${o}</option>`).join('')}</select></div>`;
+  if (f.type === 'textarea') return `<label class="form-label">${f.label}</label><textarea id="${id}" placeholder="${f.placeholder||''}" rows="3"></textarea>`;
+  return `<div><label class="form-label">${f.label}</label><input type="text" id="${id}" placeholder="${f.placeholder||''}"></div>`;
+}
+
+async function generateDocument() {
+  if (!selectedDocType) return;
+  const fieldData = {};
+  selectedDocType.fields.forEach(f => {
+    const el = document.getElementById(`doc-field-${f.name}`);
+    if (el) fieldData[f.label] = el.value || el.options?.[el.selectedIndex]?.text || '';
+  });
+  document.getElementById('gen-btn-text').textContent = 'Generating…';
+  document.getElementById('gen-spinner').classList.remove('hidden');
+  const prompt = `Draft a complete, professional ${selectedDocType.label} document for an Indian company. The document must comply with Indian law (Companies Act 2013, Contract Act 1872, FEMA where applicable). Use formal legal language. Include all standard clauses. Details: ${JSON.stringify(fieldData, null, 2)}. Format with proper headings, numbered clauses, and parties section. Make it comprehensive and ready to use (with [BRACKETED] placeholders for any missing details that must be filled in).`;
+  try {
+    const res = await fetch(CLAUDE_PROXY, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ messages: [{ role: 'user', content: prompt }], system: 'You are an expert Indian corporate lawyer. Draft professional, legally sound documents for Indian startups. Use proper Indian legal formatting and include all standard protective clauses.', max_tokens: 2048 })
+    });
+    const data = await res.json();
+    const content = data.content?.[0]?.text || 'Could not generate document.';
+    const title = `${selectedDocType.label} — ${fieldData['Company Name'] || fieldData['First Party'] || fieldData['Disclosing Party'] || 'Draft'}`;
+    const doc = { id: Date.now().toString(), title, type: selectedDocType.id, content, status: 'Draft', created_at: new Date().toISOString() };
+    if (sb && currentUser) {
+      const { data: saved } = await sb.from('documents').insert({ user_id: currentUser.id, title, type: selectedDocType.id, content, status: 'Draft' }).select().single();
+      if (saved) { doc.id = saved.id; doc.created_at = saved.created_at; }
+    }
+    userDocs.unshift(doc);
+    closeDocCreator();
+    showToast('Document generated successfully!', 'success');
+    currentDocContent = content;
+    openDocViewer(title, selectedDocType.label, content);
+  } catch(e) {
+    showToast('Failed to generate document. Check API configuration.', 'error');
+  } finally {
+    document.getElementById('gen-btn-text').textContent = '⚡ Generate with AI';
+    document.getElementById('gen-spinner').classList.add('hidden');
+  }
+}
+
+// ─── DOCUMENT VIEWER ──────────────────────────────────────────
+function openDocViewer(title, meta, content) {
+  currentDocContent = content;
+  document.getElementById('viewer-title').textContent = title;
+  document.getElementById('viewer-meta').textContent = meta + ' · Generated ' + new Date().toLocaleDateString('en-IN');
+  document.getElementById('viewer-body').innerHTML = formatDocContent(content);
+  document.getElementById('doc-viewer').classList.add('open');
+}
+
+function closeDocViewer() { document.getElementById('doc-viewer').classList.remove('open'); }
+
+function viewDocumentById(id) {
+  const doc = userDocs.find(d => d.id === id);
+  if (doc) { const type = DOC_TYPES.find(t=>t.id===doc.type); openDocViewer(doc.title, type?.label||doc.type, doc.content); }
+}
+
+function viewDocument(doc) {
+  const type = DOC_TYPES.find(t=>t.id===doc.type);
+  openDocViewer(doc.title, type?.label||doc.type, doc.content);
+}
+
+function formatDocContent(text) {
+  return text
+    .replace(/^# (.+)$/gm, '<h1>$1</h1>')
+    .replace(/^## (.+)$/gm, '<h2>$1</h2>')
+    .replace(/^### (.+)$/gm, '<h3>$1</h3>')
+    .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
+    .replace(/\n\n/g, '</p><p>')
+    .replace(/^(?!<[hpou])/gm, '')
+    .replace(/\n/g, '<br>');
+}
+
+function copyDoc() { navigator.clipboard.writeText(currentDocContent); showToast('Copied to clipboard!', 'success'); }
+
+function downloadDoc() {
+  const blob = new Blob([currentDocContent], { type: 'text/plain' });
+  const a = document.createElement('a'); a.href = URL.createObjectURL(blob);
+  a.download = (document.getElementById('viewer-title').textContent || 'document') + '.txt';
+  a.click(); showToast('Document downloaded!', 'success');
+}
+
+// ─── UPLOADS / VAULT ──────────────────────────────────────────
+function renderUploads() {
+  const pc = document.getElementById('page-content');
+  pc.innerHTML = `
+  <div class="upload-zone" id="upload-zone" onclick="document.getElementById('file-input').click()" ondragover="e=>{e.preventDefault();this.classList.add('drag')}" ondragleave="this.classList.remove('drag')" ondrop="handleDrop(event)">
+    <input type="file" id="file-input" class="hidden" multiple accept=".pdf,.doc,.docx,.txt,.xlsx,.png,.jpg" onchange="handleFiles(this.files)">
+    <div class="upload-icon">📤</div>
+    <div class="upload-title">Drop files here or click to upload</div>
+    <div class="upload-sub">PDF, DOCX, XLSX, images supported · Max 10MB per file</div>
+    <button class="btn btn-primary btn-sm" style="margin-top:14px" onclick="event.stopPropagation()">Browse Files</button>
+  </div>
+  <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px">
+    <div class="section-title">Uploaded Documents</div>
+    <button class="btn btn-ghost btn-sm" onclick="analyzeWithAI()">🤖 Analyze with AI</button>
+  </div>
+  <div id="vault-list">
+    ${renderVaultItems()}
+  </div>`;
+}
+
+function renderVaultItems() {
+  const uploads = JSON.parse(localStorage.getItem('tp_uploads') || '[]');
+  if (uploads.length === 0) return `<div style="text-align:center;padding:32px;color:var(--gray-400)"><div style="font-size:36px;margin-bottom:8px">📭</div>No uploaded files yet. Drop files above to get started.</div>`;
+  return `<div class="docs-grid">${uploads.map(u=>`
+    <div class="doc-card">
+      <div class="doc-icon">${fileIcon(u.name)}</div>
+      <div class="doc-name">${u.name}</div>
+      <div class="doc-meta">${u.size} · ${u.date}</div>
+      <div style="display:flex;gap:6px;margin-top:8px">
+        <button class="btn btn-primary btn-sm" onclick="analyzeFile('${u.name}')">🤖 Analyze</button>
+        <button class="btn btn-danger btn-sm" onclick="removeUpload('${u.name}')">✕</button>
+      </div>
+    </div>`).join('')}</div>`;
+}
+
+function handleFiles(files) {
+  const uploads = JSON.parse(localStorage.getItem('tp_uploads') || '[]');
+  Array.from(files).forEach(f => {
+    if (!uploads.find(u=>u.name===f.name)) uploads.unshift({ name: f.name, size: formatSize(f.size), date: new Date().toLocaleDateString('en-IN'), type: f.type });
+  });
+  localStorage.setItem('tp_uploads', JSON.stringify(uploads));
+  document.getElementById('vault-list').innerHTML = renderVaultItems();
+  showToast(`${files.length} file(s) added to vault`, 'success');
+}
+
+function handleDrop(e) { e.preventDefault(); document.getElementById('upload-zone').classList.remove('drag'); handleFiles(e.dataTransfer.files); }
+function removeUpload(name) { let u = JSON.parse(localStorage.getItem('tp_uploads')||'[]'); u=u.filter(x=>x.name!==name); localStorage.setItem('tp_uploads',JSON.stringify(u)); document.getElementById('vault-list').innerHTML=renderVaultItems(); }
+function fileIcon(name) { const ext=name.split('.').pop().toLowerCase(); return { pdf:'📄', doc:'📝', docx:'📝', xlsx:'📊', xls:'📊', png:'🖼️', jpg:'🖼️', txt:'📃' }[ext]||'📎'; }
+function formatSize(bytes) { if(bytes<1024)return bytes+'B'; if(bytes<1048576)return(bytes/1024).toFixed(1)+'KB'; return(bytes/1048576).toFixed(1)+'MB'; }
+
+async function analyzeFile(name) {
+  activeAssistant = 'dd';
+  navigate('chat');
+  setTimeout(async() => { await newChatSession(); setTimeout(() => { insertPrompt(`Please analyze the document "${name}" for legal and due diligence concerns. Identify any red flags, missing clauses, or compliance issues from an Indian startup law perspective.`); sendMessage(); }, 300); }, 100);
+}
+
+async function analyzeWithAI() {
+  activeAssistant = 'dd';
+  navigate('chat');
+  setTimeout(async() => { await newChatSession(); setTimeout(() => { insertPrompt("I've uploaded some documents to my vault. Please help me understand what due diligence process I should follow for a Series A fundraise in India."); sendMessage(); }, 300); }, 100);
+}
+
+// ─── DUE DILIGENCE ────────────────────────────────────────────
+const DD_CHECKLIST = [
+  { section: '🏛️ Corporate Structure', items: [
+    { label: 'Certificate of Incorporation (CoI)', priority: 'high' },
+    { label: 'Memorandum and Articles of Association (MoA/AoA)', priority: 'high' },
+    { label: 'Board and shareholder resolutions (last 3 years)', priority: 'high' },
+    { label: 'Share Certificate register and allotment history', priority: 'high' },
+    { label: 'Cap table / shareholding pattern (current & pre-money)', priority: 'high' },
+    { label: 'Annual filings with MCA (AOC-4, MGT-7)', priority: 'medium' },
+    { label: 'Director KYC and DIN details', priority: 'medium' },
+    { label: 'Any pending MCA notices or defaults', priority: 'high' },
+    { label: 'Existing SHA / investors agreements', priority: 'high' },
+    { label: 'DPIIT / Startup India recognition certificate', priority: 'low' },
+  ]},
+  { section: '💰 Financial Documents', items: [
+    { label: 'Audited financial statements (last 3 years)', priority: 'high' },
+    { label: 'Management accounts / unaudited financials (YTD)', priority: 'high' },
+    { label: 'Bank statements (last 12 months)', priority: 'medium' },
+    { label: 'Revenue recognition policy and MIS reports', priority: 'medium' },
+    { label: 'Accounts receivable and payable aging', priority: 'medium' },
+    { label: 'Existing debt / loan agreements', priority: 'high' },
+    { label: 'Financial model and projections (3-5 years)', priority: 'medium' },
+    { label: 'Valuation report (if any)', priority: 'low' },
+    { label: 'Working capital cycle analysis', priority: 'medium' },
+  ]},
+  { section: '⚖️ Legal & Contracts', items: [
+    { label: 'All material customer contracts', priority: 'high' },
+    { label: 'Vendor and supplier agreements', priority: 'medium' },
+    { label: 'Technology / SaaS agreements', priority: 'medium' },
+    { label: 'Partnership and reseller agreements', priority: 'medium' },
+    { label: 'NDAs (outgoing and incoming)', priority: 'low' },
+    { label: 'Pending litigation and arbitration details', priority: 'high' },
+    { label: 'Notices from government or regulatory bodies', priority: 'high' },
+    { label: 'Encumbrances on assets or shares', priority: 'high' },
+    { label: 'Indemnities and guarantees given by company', priority: 'medium' },
+  ]},
+  { section: '💡 IP & Technology', items: [
+    { label: 'IP assignment agreements from all founders/employees', priority: 'high' },
+    { label: 'List of patents filed / granted (India + international)', priority: 'medium' },
+    { label: 'Trademark registrations', priority: 'medium' },
+    { label: 'Copyright registrations', priority: 'low' },
+    { label: 'Open source software usage policy and list', priority: 'medium' },
+    { label: 'Third-party software licenses', priority: 'medium' },
+    { label: 'Domain name registrations and renewals', priority: 'low' },
+    { label: 'Data security and privacy policy (DPDPA compliant)', priority: 'high' },
+    { label: 'Source code ownership and escrow', priority: 'medium' },
+  ]},
+  { section: '👥 HR & Employment', items: [
+    { label: 'List of employees with designations and salaries', priority: 'medium' },
+    { label: 'Employment agreements (standard form)', priority: 'medium' },
+    { label: 'ESOP grant letters and option pool details', priority: 'high' },
+    { label: 'Offer letters for senior management', priority: 'medium' },
+    { label: 'PF/ESIC registration and compliance certificates', priority: 'medium' },
+    { label: 'Labour law compliance (Shops Act, Factories Act)', priority: 'low' },
+    { label: 'Key employee background verification', priority: 'medium' },
+    { label: 'Non-compete and non-solicitation agreements', priority: 'medium' },
+    { label: 'Contractor / consultant agreements', priority: 'medium' },
+  ]},
+  { section: '🏛️ Regulatory & Licenses', items: [
+    { label: 'GST registration certificate', priority: 'high' },
+    { label: 'GST filing history (GSTR-1, GSTR-3B)', priority: 'medium' },
+    { label: 'Income tax PAN and TAN certificates', priority: 'high' },
+    { label: 'Income tax returns (last 3 years)', priority: 'high' },
+    { label: 'Any sector-specific licenses (NBFC, Insurance, etc.)', priority: 'high' },
+    { label: 'RBI approval for FEMA compliance (if FDI received)', priority: 'high' },
+    { label: 'FC-GPR/FC-TRS filings history', priority: 'high' },
+    { label: 'Payment aggregator licence (if applicable)', priority: 'medium' },
+    { label: 'Import-Export Code (if applicable)', priority: 'low' },
+    { label: 'Environmental clearances (if manufacturing)', priority: 'medium' },
+  ]},
+];
+
+function renderDD() {
+  const pc = document.getElementById('page-content');
+  const currentDD = ddChecklists[0];
+  const allItems = DD_CHECKLIST.flatMap(s => s.items);
+  const savedState = JSON.parse(localStorage.getItem(`dd_state_${currentDD?.id||'default'}`)||'{}');
+  const checked = Object.values(savedState).filter(v=>v==='checked').length;
+  const na = Object.values(savedState).filter(v=>v==='na').length;
+  const total = allItems.length;
+  const pct = Math.round((checked/total)*100);
+
+  pc.innerHTML = `
+  <div class="dd-header">
+    <div>
+      <h2 style="font-family:'League Spartan',sans-serif;font-size:22px;font-weight:800;color:var(--navy);margin-bottom:4px">Due Diligence Checklist</h2>
+      <p style="color:var(--gray-400);font-size:13px">${currentDD ? `${currentDD.deal_name||'Active Deal'} · ${currentDD.stage||''}` : 'No active checklist. Create one to track your DD process.'}</p>
+    </div>
+    <div style="margin-left:auto;display:flex;gap:8px">
+      <button class="btn btn-ghost btn-sm" onclick="exportDDReport()">📥 Export Report</button>
+      <button class="btn btn-primary btn-sm" onclick="openModal('new-dd-modal')">+ New Checklist</button>
+    </div>
+  </div>
+  <div class="dd-stats">
+    <div class="dd-stat">
+      <div class="dd-stat-val" style="color:var(--blue)">${pct}%</div>
+      <div class="dd-stat-label">Overall Progress</div>
+    </div>
+    <div class="dd-stat">
+      <div class="dd-stat-val" style="color:var(--green)">${checked}</div>
+      <div class="dd-stat-label">Completed</div>
+    </div>
+    <div class="dd-stat">
+      <div class="dd-stat-val" style="color:var(--amber)">${total - checked - na}</div>
+      <div class="dd-stat-label">Pending</div>
+    </div>
+    <div class="dd-stat">
+      <div class="dd-stat-val" style="color:var(--gray-400)">${na}</div>
+      <div class="dd-stat-label">Not Applicable</div>
+    </div>
+  </div>
+  <div style="background:var(--gray-100);border-radius:99px;height:6px;margin-bottom:24px;overflow:hidden">
+    <div style="height:100%;width:${pct}%;background:linear-gradient(90deg,var(--blue),var(--blue-light));border-radius:99px;transition:width .4s"></div>
+  </div>
+  ${DD_CHECKLIST.map((section, si) => `
+  <div class="dd-section ${si<2?'open':''}">
+    <div class="dd-section-header" onclick="toggleDDSection(this)">
+      <div class="dd-section-title">
+        ${section.section}
+        <span class="badge badge-gray">${section.items.filter((_,i)=>savedState[`${si}_${i}`]==='checked').length}/${section.items.length}</span>
+      </div>
+      <span class="dd-chevron">▾</span>
+    </div>
+    <div class="dd-section-body">
+      ${section.items.map((item, ii) => {
+        const key = `${si}_${ii}`;
+        const state = savedState[key] || 'none';
+        return `<div class="dd-item">
+          <div class="dd-check ${state==='checked'?'checked':''} ${state==='na'?'na':''}" onclick="toggleDDItem(${si}, ${ii}, this)" title="Click to toggle">${state==='checked'?'✓':state==='na'?'—':''}</div>
+          <div class="dd-item-label ${state==='checked'?'text-muted':''}" style="${state==='checked'?'text-decoration:line-through;':''}">${item.label}</div>
+          <span class="dd-item-priority ${item.priority}">${item.priority}</span>
+          <button class="btn btn-ghost btn-sm" onclick="ddAskAI('${item.label.replace(/'/g,"\\'")}')">🤖</button>
+        </div>`;
+      }).join('')}
+    </div>
+  </div>`).join('')}`;
+}
+
+function toggleDDSection(header) {
+  const section = header.parentElement;
+  section.classList.toggle('open');
+}
+
+function toggleDDItem(si, ii, el) {
+  const key = `${si}_${ii}`;
+  const ddId = ddChecklists[0]?.id || 'default';
+  const state = JSON.parse(localStorage.getItem(`dd_state_${ddId}`) || '{}');
+  const current = state[key] || 'none';
+  state[key] = current === 'none' ? 'checked' : current === 'checked' ? 'na' : 'none';
+  localStorage.setItem(`dd_state_${ddId}`, JSON.stringify(state));
+  const newState = state[key];
+  el.className = `dd-check ${newState==='checked'?'checked':''}${newState==='na'?'na':''}`;
+  el.textContent = newState==='checked'?'✓':newState==='na'?'—':'';
+  const label = el.nextElementSibling;
+  label.style.textDecoration = newState==='checked'?'line-through':'';
+  label.className = `dd-item-label ${newState==='checked'?'text-muted':''}`;
+}
+
+async function ddAskAI(label) {
+  activeAssistant = 'dd';
+  navigate('chat');
+  setTimeout(async() => { await newChatSession(); setTimeout(() => { insertPrompt(`Help me understand what documents and information I need to collect for this due diligence item: "${label}". What are the red flags to watch out for, and how should I review this from an Indian startup investor perspective?`); sendMessage(); }, 300); }, 100);
+}
+
+async function createDDChecklist() {
+  const dealName = document.getElementById('dd-deal-name').value.trim();
+  const stage = document.getElementById('dd-stage').value;
+  const role = document.getElementById('dd-role').value;
+  if (!dealName) { showToast('Please enter a deal name', 'error'); return; }
+  const checklist = { id: Date.now().toString(), deal_name: dealName, stage, role, created_at: new Date().toISOString() };
+  if (sb && currentUser) {
+    const { data } = await sb.from('dd_checklists').insert({ user_id: currentUser.id, deal_name: dealName, stage, role }).select().single();
+    if (data) { checklist.id = data.id; checklist.created_at = data.created_at; }
+  }
+  ddChecklists.unshift(checklist);
+  closeModal('new-dd-modal');
+  renderDD();
+  showToast('DD checklist created!', 'success');
+}
+
+async function exportDDReport() {
+  activeAssistant = 'dd';
+  navigate('chat');
+  setTimeout(async() => { await newChatSession(); setTimeout(() => { insertPrompt("Generate a comprehensive due diligence summary report for a Series A fundraise. Include key risk areas, recommended document checklist, FEMA compliance requirements, and a structured DD process timeline for an Indian startup. Format it as a professional report."); sendMessage(); }, 300); }, 100);
+}
+
+// ─── CAP TABLE ────────────────────────────────────────────────
+function renderCapTable() {
+  const pc = document.getElementById('page-content');
+  const saved = JSON.parse(localStorage.getItem('tp_captable') || '{"founders":[],"investors":[],"esops":[]}');
+  capTableData = saved;
+  const totalShares = [...capTableData.founders, ...capTableData.investors, ...capTableData.esops].reduce((s,r)=>s+(parseInt(r.shares)||0), 0);
+
+  pc.innerHTML = `
+  <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;flex-wrap:wrap;gap:10px">
+    <div>
+      <h2 style="font-family:'League Spartan',sans-serif;font-size:22px;font-weight:800;color:var(--navy);margin-bottom:4px">Cap Table Builder</h2>
+      <p style="color:var(--gray-400);font-size:13px">Model your equity structure, dilution scenarios, and ESOP pool</p>
+    </div>
+    <div style="display:flex;gap:8px">
+      <button class="btn btn-ghost btn-sm" onclick="capTableAI()">🤖 AI Analysis</button>
+      <button class="btn btn-primary btn-sm" onclick="addCapRow('founders')">+ Add Founder</button>
+    </div>
+  </div>
+  <div class="card" style="margin-bottom:16px">
+    <div class="card-body">
+      <div class="section-title" style="margin-bottom:12px">👥 Founders</div>
+      <div style="overflow-x:auto"><table style="width:100%;border-collapse:collapse" id="founders-table">
+        <thead><tr style="border-bottom:1.5px solid var(--gray-200)">
+          ${['Name','Designation','Shares','% Pre-Money','Vesting','Action'].map(h=>`<th style="text-align:left;padding:8px 12px;font-size:12px;font-weight:700;color:var(--gray-400);white-space:nowrap">${h}</th>`).join('')}
+        </tr></thead>
+        <tbody>${renderCapRows('founders', capTableData.founders, totalShares)}</tbody>
+      </table></div>
+    </div>
+  </div>
+  <div class="card" style="margin-bottom:16px">
+    <div class="card-body">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px">
+        <div class="section-title">💰 Investors</div>
+        <button class="btn btn-ghost btn-sm" onclick="addCapRow('investors')">+ Add</button>
+      </div>
+      <div style="overflow-x:auto"><table style="width:100%;border-collapse:collapse">
+        <thead><tr style="border-bottom:1.5px solid var(--gray-200)">
+          ${['Investor','Round','Instrument','Shares','Amount (₹)','% Post','Action'].map(h=>`<th style="text-align:left;padding:8px 12px;font-size:12px;font-weight:700;color:var(--gray-400);white-space:nowrap">${h}</th>`).join('')}
+        </tr></thead>
+        <tbody>${renderCapRows('investors', capTableData.investors, totalShares)}</tbody>
+      </table></div>
+    </div>
+  </div>
+  <div class="card" style="margin-bottom:16px">
+    <div class="card-body">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px">
+        <div class="section-title">💼 ESOP Pool</div>
+        <button class="btn btn-ghost btn-sm" onclick="addCapRow('esops')">+ Add Grant</button>
+      </div>
+      <div style="overflow-x:auto"><table style="width:100%;border-collapse:collapse">
+        <thead><tr style="border-bottom:1.5px solid var(--gray-200)">
+          ${['Employee','Designation','Shares Granted','% Pool','Vesting Status','Action'].map(h=>`<th style="text-align:left;padding:8px 12px;font-size:12px;font-weight:700;color:var(--gray-400);white-space:nowrap">${h}</th>`).join('')}
+        </tr></thead>
+        <tbody>${renderCapRows('esops', capTableData.esops, totalShares)}</tbody>
+      </table></div>
+    </div>
+  </div>
+  <div class="card">
+    <div class="card-body">
+      <div class="section-title" style="margin-bottom:16px">Summary</div>
+      <div class="stats-grid" style="grid-template-columns:repeat(4,1fr)">
+        <div class="stat-card" style="--stat-bg:rgba(37,99,235,.06)"><div class="stat-label">Total Shares</div><div class="stat-value" style="font-size:20px">${totalShares.toLocaleString('en-IN')}</div></div>
+        <div class="stat-card" style="--stat-bg:rgba(16,185,129,.06)"><div class="stat-label">Founders</div><div class="stat-value" style="font-size:20px">${capTableData.founders.length}</div></div>
+        <div class="stat-card" style="--stat-bg:rgba(245,158,11,.06)"><div class="stat-label">Investors</div><div class="stat-value" style="font-size:20px">${capTableData.investors.length}</div></div>
+        <div class="stat-card" style="--stat-bg:rgba(124,58,237,.06)"><div class="stat-label">ESOP Grants</div><div class="stat-value" style="font-size:20px">${capTableData.esops.length}</div></div>
+      </div>
+    </div>
+  </div>`;
+}
+
+function renderCapRows(type, rows, total) {
+  if (!rows.length) return `<tr><td colspan="7" style="padding:20px;text-align:center;color:var(--gray-400);font-size:12.5px">No entries yet. Click + Add to add.</td></tr>`;
+  return rows.map((r, i) => {
+    const pct = total > 0 ? ((parseInt(r.shares)||0)/total*100).toFixed(2) : '0.00';
+    if (type==='founders') return `<tr style="border-bottom:1px solid var(--gray-100)">
+      <td style="padding:10px 12px;font-size:13px;font-weight:600">${r.name||'—'}</td>
+      <td style="padding:10px 12px;font-size:13px">${r.designation||'—'}</td>
+      <td style="padding:10px 12px;font-size:13px">${(parseInt(r.shares)||0).toLocaleString('en-IN')}</td>
+      <td style="padding:10px 12px"><span class="badge badge-blue">${pct}%</span></td>
+      <td style="padding:10px 12px;font-size:13px">${r.vesting||'4Y/1C'}</td>
+      <td style="padding:10px 12px"><button class="btn btn-danger btn-sm" onclick="removeCapRow('founders',${i})">✕</button></td>
+    </tr>`;
+    if (type==='investors') return `<tr style="border-bottom:1px solid var(--gray-100)">
+      <td style="padding:10px 12px;font-size:13px;font-weight:600">${r.name||'—'}</td>
+      <td style="padding:10px 12px;font-size:13px">${r.round||'—'}</td>
+      <td style="padding:10px 12px;font-size:13px">${r.instrument||'CCPS'}</td>
+      <td style="padding:10px 12px;font-size:13px">${(parseInt(r.shares)||0).toLocaleString('en-IN')}</td>
+      <td style="padding:10px 12px;font-size:13px">₹${(parseInt(r.amount)||0).toLocaleString('en-IN')}</td>
+      <td style="padding:10px 12px"><span class="badge badge-green">${pct}%</span></td>
+      <td style="padding:10px 12px"><button class="btn btn-danger btn-sm" onclick="removeCapRow('investors',${i})">✕</button></td>
+    </tr>`;
+    return `<tr style="border-bottom:1px solid var(--gray-100)">
+      <td style="padding:10px 12px;font-size:13px;font-weight:600">${r.name||'—'}</td>
+      <td style="padding:10px 12px;font-size:13px">${r.designation||'—'}</td>
+      <td style="padding:10px 12px;font-size:13px">${(parseInt(r.shares)||0).toLocaleString('en-IN')}</td>
+      <td style="padding:10px 12px"><span class="badge badge-amber">${pct}%</span></td>
+      <td style="padding:10px 12px;font-size:13px">${r.status||'Unvested'}</td>
+      <td style="padding:10px 12px"><button class="btn btn-danger btn-sm" onclick="removeCapRow('esops',${i})">✕</button></td>
+    </tr>`;
+  }).join('');
+}
+
+function addCapRow(type) {
+  const templates = {
+    founders: { name: prompt('Founder name?'), designation: prompt('Designation? (e.g. CEO)'), shares: prompt('Number of shares?'), vesting: '4Y/1C' },
+    investors: { name: prompt('Investor name?'), round: prompt('Round? (e.g. Seed, Series A)'), instrument: 'CCPS', shares: prompt('Number of shares?'), amount: prompt('Investment amount (₹)?') },
+    esops: { name: prompt('Employee name?'), designation: prompt('Designation?'), shares: prompt('Options granted?'), status: 'Unvested' },
+  };
+  const row = templates[type];
+  if (!row.name) return;
+  capTableData[type].push(row);
+  localStorage.setItem('tp_captable', JSON.stringify(capTableData));
+  renderCapTable();
+}
+
+function removeCapRow(type, idx) {
+  capTableData[type].splice(idx, 1);
+  localStorage.setItem('tp_captable', JSON.stringify(capTableData));
+  renderCapTable();
+}
+
+async function capTableAI() {
+  activeAssistant = 'captable';
+  const summary = `Founders: ${capTableData.founders.map(f=>`${f.name} (${f.shares} shares)`).join(', ')||'none'}; Investors: ${capTableData.investors.map(i=>`${i.name} (${i.shares} shares, ${i.round})`).join(', ')||'none'}; ESOP: ${capTableData.esops.length} grants`;
+  navigate('chat');
+  setTimeout(async() => { await newChatSession(); setTimeout(() => { insertPrompt(`Analyze my cap table: ${summary}. Provide advice on: 1) Current equity structure 2) Dilution scenarios for future rounds 3) ESOP pool sizing 4) Any structural concerns for future fundraising in India`); sendMessage(); }, 300); }, 100);
+}
+
+// ─── PROFILE ──────────────────────────────────────────────────
+function renderProfile() {
+  const p = userProfile || {};
+  const pc = document.getElementById('page-content');
+  pc.innerHTML = `
+  <div class="profile-header">
+    <div class="profile-avatar-lg">${(p.full_name||'U').charAt(0)}</div>
+    <div>
+      <div class="profile-name">${p.full_name||'Your Name'}</div>
+      <div class="profile-role">${p.role||'Legal Professional'} ${p.company?`· ${p.company}`:''}</div>
+      <div style="color:rgba(186,224,255,.6);font-size:12px;margin-top:4px">${currentUser?.email||''}</div>
+    </div>
+    <button class="btn btn-ghost btn-sm" style="margin-left:auto;color:#fff;border-color:rgba(255,255,255,.2)" onclick="handleLogout()">Sign Out</button>
+  </div>
+  <div class="card">
+    <div class="card-body">
+      <div class="section-title" style="margin-bottom:20px">Personal Information</div>
+      <div class="profile-form">
+        <div class="form-group"><label class="form-label">Full Name</label><input id="pf-name" value="${p.full_name||''}"></div>
+        <div class="form-group"><label class="form-label">Company / Organisation</label><input id="pf-company" value="${p.company||''}"></div>
+        <div class="form-group"><label class="form-label">Role</label>
+          <select id="pf-role">
+            ${['Founder / Co-founder','Legal Counsel','CFO / Finance','VC / Investor','Investment Banker','CA / CS','Other'].map(r=>`<option ${p.role===r?'selected':''}>${r}</option>`).join('')}
+          </select>
+        </div>
+        <div class="form-group"><label class="form-label">Phone Number</label><input id="pf-phone" value="${p.phone||''}" placeholder="+91 98765 43210"></div>
+        <div class="form-group" style="grid-column:1/-1"><label class="form-label">Bio</label><textarea id="pf-bio" placeholder="Brief description…" rows="3">${p.bio||''}</textarea></div>
+      </div>
+      <div style="display:flex;justify-content:flex-end;margin-top:16px">
+        <button class="btn btn-primary" onclick="saveProfile()">Save Changes</button>
+      </div>
+    </div>
+  </div>
+  <div class="card" style="margin-top:16px">
+    <div class="card-body">
+      <div class="section-title" style="margin-bottom:16px">Usage Statistics</div>
+      <div class="stats-grid" style="grid-template-columns:repeat(3,1fr)">
+        <div class="stat-card"><div class="stat-label">Documents</div><div class="stat-value" style="font-size:20px">${userDocs.length}</div></div>
+        <div class="stat-card"><div class="stat-label">Chat Sessions</div><div class="stat-value" style="font-size:20px">${chatSessions.length}</div></div>
+        <div class="stat-card"><div class="stat-label">DD Checklists</div><div class="stat-value" style="font-size:20px">${ddChecklists.length}</div></div>
+      </div>
+    </div>
+  </div>`;
+}
+
+async function saveProfile() {
+  const updates = {
+    full_name: document.getElementById('pf-name').value,
+    company: document.getElementById('pf-company').value,
+    role: document.getElementById('pf-role').value,
+    phone: document.getElementById('pf-phone').value,
+    bio: document.getElementById('pf-bio').value,
+  };
+  if (sb && currentUser) { await sb.from('profiles').upsert({ id: currentUser.id, ...updates }); }
+  userProfile = { ...userProfile, ...updates };
+  updateSidebarUser();
+  showToast('Profile updated!', 'success');
+}
+
+// ─── UTILITIES ────────────────────────────────────────────────
+function formatDate(str) { try { return new Date(str).toLocaleDateString('en-IN', { day:'numeric', month:'short', year:'numeric' }); } catch { return '—'; } }
+
+function formatMarkdown(text) {
+  return text
+    .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
+    .replace(/\*(.+?)\*/g, '<em>$1</em>')
+    .replace(/`(.+?)`/g, '<code style="background:rgba(0,0,0,.1);padding:1px 5px;border-radius:3px;font-size:12px">$1</code>')
+    .replace(/^### (.+)$/gm, '<strong>$1</strong>')
+    .replace(/^## (.+)$/gm, '<strong style="font-size:15px">$1</strong>')
+    .replace(/^# (.+)$/gm, '<strong style="font-size:16px">$1</strong>')
+    .replace(/\n\n/g, '<br><br>')
+    .replace(/\n/g, '<br>')
+    .replace(/^- (.+)$/gm, '• $1');
+}
+
+function setBtnLoading(btnId, textId, spinnerId, loading, text='') {
+  const btn = document.getElementById(btnId);
+  if (!btn) return;
+  btn.disabled = loading;
+  if (textId) document.getElementById(textId).textContent = loading ? 'Loading…' : text;
+  if (spinnerId) document.getElementById(spinnerId).classList.toggle('hidden', !loading);
+}
+
+function showToast(msg, type='') {
+  const container = document.getElementById('toast-container');
+  const toast = document.createElement('div');
+  toast.className = `toast ${type}`;
+  toast.innerHTML = `<span>${msg}</span>`;
+  container.appendChild(toast);
+  setTimeout(() => toast.remove(), 3500);
+}
+
+function openModal(id) { document.getElementById(id).classList.add('open'); }
+function closeModal(id) { document.getElementById(id).classList.remove('open'); }
+
+function toggleSidebar() {
+  document.getElementById('sidebar').classList.toggle('open');
+  document.getElementById('sidebar-overlay').classList.toggle('open');
+}
+function closeSidebar() {
+  document.getElementById('sidebar').classList.remove('open');
+  document.getElementById('sidebar-overlay').classList.remove('open');
+}
+
+// Close overlays on Escape
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape') {
+    closeDocCreator();
+    closeDocViewer();
+    document.querySelectorAll('.modal-overlay').forEach(m => m.classList.remove('open'));
+  }
+});
+</script>
+</body>
+</html>
