@@ -9,6 +9,9 @@
 <link href="https://fonts.googleapis.com/css2?family=League+Spartan:wght@400;500;600;700;800;900&family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mammoth/1.6.0/mammoth.browser.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+<script>if(typeof pdfjsLib!=='undefined') pdfjsLib.GlobalWorkerOptions.workerSrc='https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';</script>
 <style>
 /* ─── TOKENS ────────────────────────────────────────────── */
 :root {
@@ -328,14 +331,15 @@ textarea { resize: vertical; min-height: 90px; }
 .session-item.active { background: var(--white); border-color: var(--blue-light); }
 .session-title { font-size: 12.5px; font-weight: 600; color: var(--gray-800); margin-bottom: 3px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .session-meta { font-size: 11px; color: var(--gray-400); }
-.chat-main { display: flex; flex-direction: column; }
-.chat-topbar { padding: 14px 20px; border-bottom: 1px solid var(--gray-200); display: flex; align-items: center; gap: 10px; }
+.chat-main { display: flex; flex-direction: column; min-height: 0; overflow: hidden; }
+.chat-topbar { padding: 14px 20px; border-bottom: 1px solid var(--gray-200); display: flex; align-items: center; gap: 10px; flex-shrink: 0; }
 .chat-assistant-badge { display: flex; align-items: center; gap: 8px; }
 .assistant-avatar { width: 32px; height: 32px; border-radius: 8px; background: linear-gradient(135deg, var(--navy) 0%, var(--blue) 100%); display: flex; align-items: center; justify-content: center; font-size: 15px; }
 .assistant-name { font-family: 'League Spartan', sans-serif; font-size: 14px; font-weight: 700; color: var(--navy); }
 .assistant-status { font-size: 11px; color: var(--green); display: flex; align-items: center; gap: 4px; }
 .assistant-status::before { content: ''; width: 6px; height: 6px; border-radius: 50%; background: var(--green); display: inline-block; }
-.messages-area { flex: 1; overflow-y: auto; padding: 20px; display: flex; flex-direction: column; gap: 16px; }
+.messages-area { flex: 1; min-height: 0; overflow-y: auto; padding: 20px; display: flex; flex-direction: column; gap: 16px; scroll-behavior: smooth; }
+.chat-input-area { flex-shrink: 0; }
 .msg { display: flex; gap: 10px; max-width: 85%; animation: msgIn .25s ease; }
 @keyframes msgIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
 .msg.user { margin-left: auto; flex-direction: row-reverse; }
@@ -414,6 +418,23 @@ textarea { resize: vertical; min-height: 90px; }
 .doc-form-desc { font-size: 12px; color: var(--gray-400); margin-bottom: 20px; }
 .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 14px; }
 .doc-creator-footer { padding: 16px 24px; border-top: 1px solid var(--gray-200); display: flex; justify-content: flex-end; gap: 10px; }
+
+/* ─── REFERENCE DOC UPLOAD ──────────────────────────────── */
+.ref-doc-zone {
+  border: 2px dashed var(--gray-200); border-radius: var(--r);
+  padding: 14px 16px; margin-top: 20px; background: var(--gray-50);
+  cursor: pointer; transition: all .2s; display: flex; align-items: center; gap: 12px;
+}
+.ref-doc-zone:hover, .ref-doc-zone.drag { border-color: var(--blue-light); background: var(--sky-light); }
+.ref-doc-zone.has-file { border-color: var(--green); background: #ECFDF5; cursor: default; }
+.ref-doc-icon { font-size: 22px; flex-shrink: 0; }
+.ref-doc-text { flex: 1; min-width: 0; }
+.ref-doc-label { font-size: 12.5px; font-weight: 600; color: var(--navy); }
+.ref-doc-sub { font-size: 11.5px; color: var(--gray-400); margin-top: 2px; }
+.ref-doc-clear { font-size: 13px; color: var(--red); background: none; border: none; cursor: pointer; padding: 4px 8px; border-radius: 6px; flex-shrink: 0; }
+.ref-doc-clear:hover { background: #FEF2F2; }
+.ref-doc-progress { width: 100%; height: 3px; background: var(--gray-200); border-radius: 99px; margin-top: 8px; overflow: hidden; display: none; }
+.ref-doc-progress-fill { height: 100%; background: var(--blue); border-radius: 99px; transition: width .3s; }
 
 /* ─── DUE DILIGENCE ─────────────────────────────────────── */
 .dd-header { display: flex; align-items: center; gap: 16px; margin-bottom: 24px; flex-wrap: wrap; }
@@ -821,6 +842,7 @@ let selectedDocType = null;
 let currentDocContent = '';
 let activeAssistant = 'general';
 let capTableData = { founders: [], investors: [], esops: [] };
+let referenceDocText = '';  // extracted text from uploaded reference document
 
 const ASSISTANTS = [
   { id: 'general',    name: 'Legal Counsel',       icon: '⚖️',  color: '#EFF6FF', desc: 'Draft, review, and explain legal documents tailored for Indian startup law.', tags: ['SHA','NDA','Term Sheets','Contracts'], system: 'You are an expert Indian startup legal counsel. You specialize in Companies Act 2013, SEBI regulations, FEMA, and startup fundraising law. Be precise, practical, and help draft legally sound documents.' },
@@ -1351,6 +1373,7 @@ async function deleteDoc(id) {
 
 // ─── DOCUMENT CREATOR ─────────────────────────────────────────
 function openDocCreator() {
+  referenceDocText = '';  // reset on each open
   document.getElementById('doc-creator').classList.add('open');
   const list = document.getElementById('doc-types-list');
   const categories = [...new Set(DOC_TYPES.map(d => d.category))];
@@ -1368,6 +1391,7 @@ function closeDocCreator() { document.getElementById('doc-creator').classList.re
 
 function selectDocType(id) {
   selectedDocType = DOC_TYPES.find(d => d.id === id);
+  referenceDocText = '';  // reset reference doc when switching doc type
   document.querySelectorAll('.doc-type-item').forEach(el => el.classList.remove('active'));
   document.querySelector(`.doc-type-item[onclick="selectDocType('${id}')"]`)?.classList.add('active');
   const area = document.getElementById('doc-form-area');
@@ -1375,6 +1399,19 @@ function selectDocType(id) {
     <div class="doc-form-title">${selectedDocType.icon} ${selectedDocType.label}</div>
     <div class="doc-form-desc">${selectedDocType.desc}</div>
     ${renderDocFields(selectedDocType.fields)}
+    <div style="margin-top:24px;padding-top:20px;border-top:1px solid var(--gray-200)">
+      <div style="font-size:12.5px;font-weight:600;color:var(--gray-600);margin-bottom:8px">📎 Reference Document <span style="font-weight:400;color:var(--gray-400)">(optional — AI will use it for context)</span></div>
+      <div class="ref-doc-zone" id="ref-doc-zone" onclick="document.getElementById('ref-doc-input').click()" ondragover="event.preventDefault();this.classList.add('drag')" ondragleave="this.classList.remove('drag')" ondrop="handleRefDocDrop(event)">
+        <div class="ref-doc-icon" id="ref-doc-icon">📄</div>
+        <div class="ref-doc-text">
+          <div class="ref-doc-label" id="ref-doc-label">Upload reference document</div>
+          <div class="ref-doc-sub" id="ref-doc-sub">PDF, DOCX, or TXT · Drag & drop or click to browse</div>
+          <div class="ref-doc-progress" id="ref-doc-progress"><div class="ref-doc-progress-fill" id="ref-doc-progress-fill" style="width:0%"></div></div>
+        </div>
+        <button class="ref-doc-clear hidden" id="ref-doc-clear" onclick="event.stopPropagation();clearRefDoc()">✕ Remove</button>
+      </div>
+      <input type="file" id="ref-doc-input" accept=".pdf,.docx,.doc,.txt" style="display:none" onchange="handleRefDocUpload(this.files[0])">
+    </div>
   `;
 }
 
@@ -1404,6 +1441,96 @@ function renderField(f) {
   return `<div><label class="form-label">${f.label}</label><input type="text" id="${id}" placeholder="${f.placeholder||''}"></div>`;
 }
 
+// ─── REFERENCE DOCUMENT UPLOAD ────────────────────────────────
+function handleRefDocDrop(event) {
+  event.preventDefault();
+  const zone = document.getElementById('ref-doc-zone');
+  if (zone) zone.classList.remove('drag');
+  const file = event.dataTransfer?.files?.[0];
+  if (file) handleRefDocUpload(file);
+}
+
+async function handleRefDocUpload(file) {
+  if (!file) return;
+  const allowed = ['application/pdf', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+    'application/msword', 'text/plain'];
+  const ext = file.name.split('.').pop().toLowerCase();
+  if (!allowed.includes(file.type) && !['pdf','docx','doc','txt'].includes(ext)) {
+    showToast('Unsupported file type. Use PDF, DOCX, or TXT.', 'error'); return;
+  }
+  const zone = document.getElementById('ref-doc-zone');
+  const label = document.getElementById('ref-doc-label');
+  const sub = document.getElementById('ref-doc-sub');
+  const icon = document.getElementById('ref-doc-icon');
+  const progress = document.getElementById('ref-doc-progress');
+  const progressFill = document.getElementById('ref-doc-progress-fill');
+  const clearBtn = document.getElementById('ref-doc-clear');
+  if (zone) { zone.classList.add('has-file'); zone.style.cursor = 'default'; zone.onclick = null; }
+  if (label) label.textContent = file.name;
+  if (sub) sub.textContent = 'Extracting text…';
+  if (icon) icon.textContent = '⏳';
+  if (progress) progress.style.display = 'block';
+  if (progressFill) progressFill.style.width = '30%';
+
+  try {
+    let text = '';
+    if (ext === 'txt' || file.type === 'text/plain') {
+      text = await file.text();
+      if (progressFill) progressFill.style.width = '100%';
+    } else if (ext === 'docx' || file.type.includes('wordprocessingml')) {
+      if (typeof mammoth === 'undefined') throw new Error('DOCX parser not available');
+      const arrayBuffer = await file.arrayBuffer();
+      if (progressFill) progressFill.style.width = '60%';
+      const result = await mammoth.extractRawText({ arrayBuffer });
+      text = result.value;
+      if (progressFill) progressFill.style.width = '100%';
+    } else if (ext === 'pdf' || file.type === 'application/pdf') {
+      if (typeof pdfjsLib === 'undefined') throw new Error('PDF parser not available');
+      const arrayBuffer = await file.arrayBuffer();
+      const pdf = await pdfjsLib.getDocument({ data: arrayBuffer }).promise;
+      const totalPages = pdf.numPages;
+      let pages = [];
+      for (let i = 1; i <= Math.min(totalPages, 30); i++) {
+        const page = await pdf.getPage(i);
+        const content = await page.getTextContent();
+        pages.push(content.items.map(s => s.str).join(' '));
+        if (progressFill) progressFill.style.width = `${30 + (i / Math.min(totalPages, 30)) * 65}%`;
+      }
+      text = pages.join('\n\n');
+    }
+    referenceDocText = text.trim().substring(0, 15000); // cap at ~15K chars to keep prompt size reasonable
+    const wordCount = referenceDocText.split(/\s+/).filter(Boolean).length;
+    if (icon) icon.textContent = '✅';
+    if (sub) sub.textContent = `${wordCount.toLocaleString('en-IN')} words extracted · Will be used as AI context`;
+    if (clearBtn) clearBtn.classList.remove('hidden');
+    if (progress) progress.style.display = 'none';
+    showToast(`Reference doc loaded: ${wordCount.toLocaleString('en-IN')} words`, 'success');
+  } catch(e) {
+    referenceDocText = '';
+    if (icon) icon.textContent = '❌';
+    if (sub) sub.textContent = 'Failed to extract text. Try a different file.';
+    if (progress) progress.style.display = 'none';
+    if (zone) { zone.classList.remove('has-file'); zone.style.cursor = 'pointer'; zone.onclick = () => document.getElementById('ref-doc-input')?.click(); }
+    showToast('Could not parse file: ' + e.message, 'error');
+  }
+}
+
+function clearRefDoc() {
+  referenceDocText = '';
+  const zone = document.getElementById('ref-doc-zone');
+  const label = document.getElementById('ref-doc-label');
+  const sub = document.getElementById('ref-doc-sub');
+  const icon = document.getElementById('ref-doc-icon');
+  const clearBtn = document.getElementById('ref-doc-clear');
+  const input = document.getElementById('ref-doc-input');
+  if (zone) { zone.classList.remove('has-file'); zone.style.cursor = 'pointer'; zone.onclick = () => document.getElementById('ref-doc-input')?.click(); }
+  if (label) label.textContent = 'Upload reference document';
+  if (sub) sub.textContent = 'PDF, DOCX, or TXT · Drag & drop or click to browse';
+  if (icon) icon.textContent = '📄';
+  if (clearBtn) clearBtn.classList.add('hidden');
+  if (input) input.value = '';
+}
+
 async function generateDocument() {
   if (!selectedDocType) return;
   const fieldData = {};
@@ -1413,7 +1540,10 @@ async function generateDocument() {
   });
   document.getElementById('gen-btn-text').textContent = 'Generating…';
   document.getElementById('gen-spinner').classList.remove('hidden');
-  const prompt = `Draft a complete, professional ${selectedDocType.label} document for an Indian company. The document must comply with Indian law (Companies Act 2013, Contract Act 1872, FEMA where applicable). Use formal legal language. Include all standard clauses. Details: ${JSON.stringify(fieldData, null, 2)}. Format with proper headings, numbered clauses, and parties section. Make it comprehensive and ready to use (with [BRACKETED] placeholders for any missing details that must be filled in).`;
+  const refContext = referenceDocText
+    ? `\n\nREFERENCE DOCUMENT PROVIDED BY USER:\n"""\n${referenceDocText}\n"""\nUse the above reference document as context — mirror its structure, terminology, and style where appropriate, and treat any clauses or terms in it as user preferences to incorporate or adapt.`
+    : '';
+  const prompt = `Draft a complete, professional ${selectedDocType.label} document for an Indian company. The document must comply with Indian law (Companies Act 2013, Contract Act 1872, FEMA where applicable). Use formal legal language. Include all standard clauses. Details: ${JSON.stringify(fieldData, null, 2)}.${refContext} Format with proper headings, numbered clauses, and parties section. Make it comprehensive and ready to use (with [BRACKETED] placeholders for any missing details that must be filled in).`;
   try {
     const res = await fetch(CLAUDE_PROXY, {
       method: 'POST',
