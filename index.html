@@ -1239,7 +1239,7 @@ async function sendMessage() {
     const res = await fetch(CLAUDE_PROXY, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ messages: msgs, system: asst.system, max_tokens: 1500 })
+      body: JSON.stringify({ messages: msgs, system: asst.system, max_tokens: 16000 })
     });
     const data = await res.json();
     hideTyping();
@@ -1548,7 +1548,7 @@ async function generateDocument() {
     const res = await fetch(CLAUDE_PROXY, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ messages: [{ role: 'user', content: prompt }], system: 'You are an expert Indian corporate lawyer. Draft professional, legally sound documents for Indian startups. Use proper Indian legal formatting and include all standard protective clauses.', max_tokens: 2048 })
+      body: JSON.stringify({ messages: [{ role: 'user', content: prompt }], system: 'You are an expert Indian corporate lawyer. Draft professional, legally sound documents for Indian startups. Use proper Indian legal formatting and include all standard protective clauses. IMPORTANT: Always write the COMPLETE document from start to finish. Never truncate, summarise, or use placeholders like "[rest of agreement continues]" or "[additional clauses]". Every section must be fully written out. Do not stop mid-document.', max_tokens: 64000 })
     });
     const data = await res.json();
     const content = data.content?.[0]?.text || 'Could not generate document.';
